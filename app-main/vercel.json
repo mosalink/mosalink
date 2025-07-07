@@ -1,0 +1,11 @@
+{
+  "regions": ["cdg1"],
+  "functions": {
+    "src/app/api/**/*.ts": {
+      "maxDuration": 30
+    }
+  },
+  "env": {
+    "DISABLE_SUPABASE_REALTIME": "true"
+  }
+}

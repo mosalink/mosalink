@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("SUPABASE_SESSION_POOLER")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Domain {
+  id                String     @id @default(cuid())
+  name              String     @unique
+  url               String     @unique
+  isPublish         Boolean    @default(false)
+  maximumCategories Int        @default(10)
+  creationDate      DateTime   @default(now())
+  lastUpdateDate    DateTime   @updatedAt
+  bookmark          Bookmark[]
+  categories        Category[]
+  users             User[]
+}
+
+model User {
+  id             String     @id @default(cuid())
+  name           String?
+  email          String?    @unique
+  emailVerified  DateTime?
+  image          String?
+  role           Role       @default(USER)
+  isBanned       Boolean    @default(false)
+  domainId       String     @default("clkgzh6ep0000x9im9ze8s653")
+  creationDate   DateTime   @default(now())
+  lastUpdateDate DateTime   @updatedAt
+  accounts       Account[]
+  bookmark       Bookmark[]
+  sessions       Session[]
+  domain         Domain     @relation(fields: [domainId], references: [id])
+  folders        Folder[]   @relation("FolderToUser")
+}
+
+model Category {
+  id             String     @id @default(cuid())
+  name           String
+  url            String
+  isPublish      Boolean    @default(true)
+  domainId       String
+  creationDate   DateTime   @default(now())
+  lastUpdateDate DateTime   @updatedAt
+  Bookmark       Bookmark[]
+  domain         Domain     @relation(fields: [domainId], references: [id])
+}
+
+model Bookmark {
+  id             String   @id @default(cuid())
+  title          String
+  description    String
+  url            String
+  tags           String[]
+  image          String?
+  domainId       String
+  userId         String
+  categoryId     String
+  creationDate   DateTime @default(now())
+  lastUpdateDate DateTime @updatedAt
+  category       Category @relation(fields: [categoryId], references: [id])
+  domain         Domain   @relation(fields: [domainId], references: [id])
+  user           User     @relation(fields: [userId], references: [id])
+  folders        Folder[] @relation("BookmarkToFolder")
+}
+
+model Folder {
+  id            String     @id @default(cuid())
+  name          String
+  url           String     @unique
+  isPublish     Boolean    @default(false)
+  userCreatorId String
+  publicUrl     String?
+  bookmarks     Bookmark[] @relation("BookmarkToFolder")
+  users         User[]     @relation("FolderToUser")
+}
+
+enum Role {
+  USER
+  MODERATOR
+  ADMIN
+  SUPER_ADMIN
+}

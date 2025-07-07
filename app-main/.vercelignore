@@ -1,0 +1,29 @@
+# Ignore test files and development files
+src/app/test-supabase-direct/
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# Ignore development databases
+*.db
+*.sqlite
+*.dump
+
+# Ignore IDE files
+.vscode/
+.idea/
+
+# Ignore logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Ignore coverage reports
+coverage/
+.nyc_output/
+
+# Ignore Prisma files (we're using Supabase now)
+prisma/
+lib/prisma.ts

@@ -1,0 +1,1090 @@
+--
+-- PostgreSQL database dump
+--
+
+-- Dumped from database version 15.5
+-- Dumped by pg_dump version 16.1
+
+-- Started on 2024-01-24 15:08:26 CET
+
+SET statement_timeout = 0;
+SET lock_timeout = 0;
+SET idle_in_transaction_session_timeout = 0;
+SET client_encoding = 'UTF8';
+SET standard_conforming_strings = on;
+SELECT pg_catalog.set_config('search_path', '', false);
+SET check_function_bodies = false;
+SET xmloption = content;
+SET client_min_messages = warning;
+SET row_security = off;
+
+--
+-- TOC entry 846 (class 1247 OID 24577)
+-- Name: Role; Type: TYPE; Schema: public; Owner: default
+--
+
+CREATE TYPE public."Role" AS ENUM (
+    'USER',
+    'MODERATOR',
+    'ADMIN',
+    'SUPER_ADMIN'
+);
+
+
+ALTER TYPE public."Role" OWNER TO "default";
+
+SET default_tablespace = '';
+
+SET default_table_access_method = heap;
+
+--
+-- TOC entry 214 (class 1259 OID 24585)
+-- Name: Account; Type: TABLE; Schema: public; Owner: default
+--
+
+CREATE TABLE public."Account" (
+    id text NOT NULL,
+    "userId" text NOT NULL,
+    type text NOT NULL,
+    provider text NOT NULL,
+    "providerAccountId" text NOT NULL,
+    refresh_token text,
+    access_token text,
+    expires_at integer,
+    token_type text,
+    scope text,
+    id_token text,
+    session_state text
+);
+
+
+ALTER TABLE public."Account" OWNER TO "default";
+
+--
+-- TOC entry 220 (class 1259 OID 24634)
+-- Name: Bookmark; Type: TABLE; Schema: public; Owner: default
+--
+
+CREATE TABLE public."Bookmark" (
+    id text NOT NULL,
+    title text NOT NULL,
+    description text NOT NULL,
+    url text NOT NULL,
+    tags text[],
+    image text,
+    "domainId" text NOT NULL,
+    "userId" text NOT NULL,
+    "categoryId" text NOT NULL,
+    "creationDate" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "lastUpdateDate" timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public."Bookmark" OWNER TO "default";
+
+--
+-- TOC entry 219 (class 1259 OID 24625)
+-- Name: Category; Type: TABLE; Schema: public; Owner: default
+--
+
+CREATE TABLE public."Category" (
+    id text NOT NULL,
+    name text NOT NULL,
+    url text NOT NULL,
+    "isPublish" boolean DEFAULT true NOT NULL,
+    "domainId" text NOT NULL,
+    "creationDate" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "lastUpdateDate" timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public."Category" OWNER TO "default";
+
+--
+-- TOC entry 217 (class 1259 OID 24604)
+-- Name: Domain; Type: TABLE; Schema: public; Owner: default
+--
+
+CREATE TABLE public."Domain" (
+    id text NOT NULL,
+    name text NOT NULL,
+    url text NOT NULL,
+    "isPublish" boolean DEFAULT false NOT NULL,
+    "maximumCategories" integer DEFAULT 10 NOT NULL,
+    "creationDate" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "lastUpdateDate" timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public."Domain" OWNER TO "default";
+
+--
+-- TOC entry 221 (class 1259 OID 24642)
+-- Name: Folder; Type: TABLE; Schema: public; Owner: default
+--
+
+CREATE TABLE public."Folder" (
+    id text NOT NULL,
+    name text NOT NULL,
+    url text NOT NULL,
+    "isPublish" boolean DEFAULT false NOT NULL,
+    "userCreatorId" text NOT NULL,
+    "publicUrl" text
+);
+
+
+ALTER TABLE public."Folder" OWNER TO "default";
+
+--
+-- TOC entry 215 (class 1259 OID 24592)
+-- Name: Session; Type: TABLE; Schema: public; Owner: default
+--
+
+CREATE TABLE public."Session" (
+    id text NOT NULL,
+    "sessionToken" text NOT NULL,
+    "userId" text NOT NULL,
+    expires timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public."Session" OWNER TO "default";
+
+--
+-- TOC entry 218 (class 1259 OID 24614)
+-- Name: User; Type: TABLE; Schema: public; Owner: default
+--
+
+CREATE TABLE public."User" (
+    id text NOT NULL,
+    name text,
+    email text,
+    "emailVerified" timestamp(3) without time zone,
+    image text,
+    role public."Role" DEFAULT 'USER'::public."Role" NOT NULL,
+    "isBanned" boolean DEFAULT false NOT NULL,
+    "domainId" text DEFAULT 'clkgzh6ep0000x9im9ze8s653'::text NOT NULL,
+    "creationDate" timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL,
+    "lastUpdateDate" timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public."User" OWNER TO "default";
+
+--
+-- TOC entry 216 (class 1259 OID 24599)
+-- Name: VerificationToken; Type: TABLE; Schema: public; Owner: default
+--
+
+CREATE TABLE public."VerificationToken" (
+    identifier text NOT NULL,
+    token text NOT NULL,
+    expires timestamp(3) without time zone NOT NULL
+);
+
+
+ALTER TABLE public."VerificationToken" OWNER TO "default";
+
+--
+-- TOC entry 222 (class 1259 OID 24650)
+-- Name: _BookmarkToFolder; Type: TABLE; Schema: public; Owner: default
+--
+
+CREATE TABLE public."_BookmarkToFolder" (
+    "A" text NOT NULL,
+    "B" text NOT NULL
+);
+
+
+ALTER TABLE public."_BookmarkToFolder" OWNER TO "default";
+
+--
+-- TOC entry 223 (class 1259 OID 24655)
+-- Name: _FolderToUser; Type: TABLE; Schema: public; Owner: default
+--
+
+CREATE TABLE public."_FolderToUser" (
+    "A" text NOT NULL,
+    "B" text NOT NULL
+);
+
+
+ALTER TABLE public."_FolderToUser" OWNER TO "default";
+
+--
+-- TOC entry 2619 (class 0 OID 24585)
+-- Dependencies: 214
+-- Data for Name: Account; Type: TABLE DATA; Schema: public; Owner: default
+--
+
+COPY public."Account" (id, "userId", type, provider, "providerAccountId", refresh_token, access_token, expires_at, token_type, scope, id_token, session_state) FROM stdin;
+\.
+
+
+--
+-- TOC entry 2625 (class 0 OID 24634)
+-- Dependencies: 220
+-- Data for Name: Bookmark; Type: TABLE DATA; Schema: public; Owner: default
+--
+
+COPY public."Bookmark" (id, title, description, url, tags, image, "domainId", "userId", "categoryId", "creationDate", "lastUpdateDate") FROM stdin;
+clldrlgo70001l708mvzqn0lz	React	The library for web and native user interfaces	https://react.dev	{react}	https://react.dev/images/og-home.png	clldpr0xs00009gd8mn4bb7hv	clldpr18w00019gd8zo6jiizb	clldrix050001ml08kmtz6zdn	2023-08-16 13:24:46.374	2023-08-16 13:24:46.374
+clldrlxi50002l7080ypvjo25	Manage Your Team’s Projects From Anywhere | Trello	Make the impossible, possible with Trello. The ultimate teamwork project management tool. Start up a board in seconds, automate tedious tasks, and collaborate anywhere, even on mobile.	https://trello.com	{project,team}	//images.ctfassets.net/rz1oowkt5gyp/75rDABL8fyMtNLlUAtBxrg/c5e145977a86c41c47e17c69410c64f7/TrelloUICollage_4x.png?w=540	clldpr0xs00009gd8mn4bb7hv	clldpr18w00019gd8zo6jiizb	clldrkto00000l70800w723yh	2023-08-16 13:25:08.188	2023-08-16 13:25:08.188
+clldrmls80003l708oktu8c8f	Your connected workspace for wiki, docs & projects | Notion	A new tool that blends your everyday work apps into one. It's the all-in-one workspace for you and your team.	https://notion.com	{project,team}	https://www.notion.so/front-static/meta/default.png	clldpr0xs00009gd8mn4bb7hv	clldpr18w00019gd8zo6jiizb	clldrkto00000l70800w723yh	2023-08-16 13:25:39.655	2023-08-16 13:25:39.655
+clldrnf1u0004l708hs4uehng	Marketing, Automation & Email Platform | Mailchimp	Grow your business on your terms with Mailchimp's All-In-One marketing, automation & email marketing platform. Easy to use - start for free!	https://mailchimp.com	{emailing,marketing}	https://eep.io/images/yzco4xsimv0y/24H6wd91AK6dsK0oZqflB6/002bed565a1a474d01ac6469bcc89cbb/D3_General.png	clldpr0xs00009gd8mn4bb7hv	clldpr18w00019gd8zo6jiizb	clldrkto00000l70800w723yh	2023-08-16 13:26:17.569	2023-08-16 13:26:17.569
+clldro91w0005l708lsoicnk5	 Jira | Issue & Project Tracking Software | Atlassian 	Make the impossible, possible in Jira. Plan, track, and release world-class software with the number one project management tool for agile teams.	https://jira.com	{project,team}	https://wac-cdn.atlassian.com/dam/jcr:9e1841b9-2557-4eb2-ab47-d92428580b02/Jira%20Software@2x-blue.png	clldpr0xs00009gd8mn4bb7hv	clldpr18w00019gd8zo6jiizb	clldrkto00000l70800w723yh	2023-08-16 13:26:56.467	2023-08-16 13:26:56.467
+clldrpq1f0006l708486y1ezk	shadcn/ui	Beautifully designed components built with Radix UI and Tailwind CSS.	https://ui.shadcn.com/	{front,designsystem}	https://ui.shadcn.com/og.jpg	clldpr0xs00009gd8mn4bb7hv	clldpr18w00019gd8zo6jiizb	clldrix050001ml08kmtz6zdn	2023-08-16 13:28:05.133	2023-08-16 13:28:05.133
+clleytlex0000l4082rc5oip3	Flupa – L'association francophone des professionnels de l'expérience utilisateur	Association francophone des pros	https://flupa.eu	{professionnel,communaute,ateliers}	https://flupa.eu/wp-content/uploads/2020/11/logo-flupa@2x-1.png	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrioth0000ml08d9esqdtg	2023-08-17 09:34:49.256	2023-08-17 09:34:49.256
+clleywbw20000mp08z8mw7kdu	Ux writing - Quand le contenu transforme l'expérience - Gladys... - Librairie Eyrolles	Ai je le droit de le placer dans l'UX design ?	https://www.eyrolles.com/Informatique/Livre/ux-writing-9782212679809/	{uxwriting,content,ouvrage}	https://servimg.eyrolles.com/static/media/9809/9782212679809_internet_h1400.jpg	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrioth0000ml08d9esqdtg	2023-08-17 09:36:56.883	2023-08-17 09:38:18.494
+cllf5wce20001md083zra2qrr	L'annuaire des Start up de France | Base de données Start up France	Retrouvez l'annuaire social des Start up de France, tous les jours. La liste de start up de France dans une base de données qualifiée.	https://lespepitestech.com/	{}	https://d3kqkuy1hpjocx.cloudfront.net/s3fs-public/home_6.jpg	clldpr0xs00009gd8mn4bb7hv	clldrjw1n0002lb08bdzng9ga	clldrkto00000l70800w723yh	2023-08-17 12:52:54.843	2023-08-17 12:52:54.843
+clm8vf7rc0000lc09vl1yg0mz	Obsidian - Sharpen your thinking	Obsidian is the private and flexible note‑taking app that adapts to the way you think.	https://obsidian.md	{}	https://obsidian.md/images/banner.png	clldpr0xs00009gd8mn4bb7hv	clm7vl39d0000lc08n3hi8m7t	clldrkto00000l70800w723yh	2023-09-07 07:52:44.808	2023-09-07 07:52:44.808
+cllvxiva70000l4087c5pjf69	Rémy Barbe on LinkedIn: STRUCTURE ARTICLE DE RECHERCHE L'anatomie d'un document de recherche -… | 31 comments	STRUCTURE ARTICLE DE RECHERCHE \n\nL&#39;anatomie d&#39;un document de recherche - c&#39;est tout ce dont vous avez besoin pour structurer votre article.\n\nCredit dessin:… | 31 comments on LinkedIn	https://www.linkedin.com/posts/remy-barbe-geneve_structure-article-de-recherche-lanatomie-activity-7099034242298298368-1G_c?utm_source=share&utm_medium=member_desktop	{}	https://media.licdn.com/dms/image/D4E22AQGCl5-GNyRWTg/feedshare-shrink_2048_1536/0/1692541656222?e=1696464000&v=beta&t=OaDAtk1LEjiQVuIijZRzNh_sF2NM-JPJ5pnCHP-s364	clldpr0xs00009gd8mn4bb7hv	clldrjw1n0002lb08bdzng9ga	clldrioth0000ml08d9esqdtg	2023-08-29 06:30:34.208	2023-08-29 06:55:26.988
+clmunkoeb0000mg08bg59a3x1	Plateforme de développement en temps réel Unity | Moteur pour la 2D, 3D, RV et RA	Créez et développez des jeux, des applications et des expériences 3D en temps réel pour les secteurs du divertissement, du cinéma, de l'automobile, de l'architecture, etc. Démarrez avec Unity dès aujourd'hui.	https://unity.com/fr	{AR,VR,3D}	https://cdn.sanity.io/images/fuvbjjlp/production/59311eb2aa91009ac2a4eac41a6b4ae0e26ccda2-22x24.svg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsurpea0007mi08qphbs4ot	2023-09-22 13:43:58.594	2023-09-22 13:45:18.739
+cllf5byp30000md08o9e8xxv8	AppScho | Le campus mobile	Le truc des bobos de lenseignement	https://www.appscho.com/	{campus,test}	https://uploads-ssl.webflow.com/6163fa6cbbf68f1ad2193c5a/61a6495f1436da9d9578a342_2%20(1).png	clldpr0xs00009gd8mn4bb7hv	clldrjw1n0002lb08bdzng9ga	clldrix050001ml08kmtz6zdn	2023-08-17 12:37:03.974	2023-08-18 07:18:32.678
+cllrrjuib0000l708alcwkph3	UX Conf - UX-REPUBLIC	UX-REPUBLIC UX Conf	https://www.ux-republic.com/lux-conf-human-first/	{Conference,ateliers,communaute}	http://../wp-content/uploads/2023/06/logo-ux-conf.svg	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrioth0000ml08d9esqdtg	2023-08-26 08:32:17.458	2023-08-26 08:32:17.458
+clm8vak8z0000mj08ohk41z5u	Joplin	Joplin is an open source note-taking app. Capture your thoughts and securely access them from any device.\n	https://joplinapp.org	{}	/images/logo-text.svg	clldpr0xs00009gd8mn4bb7hv	clm7vl39d0000lc08n3hi8m7t	clldrkto00000l70800w723yh	2023-09-07 07:49:07.713	2023-09-07 07:49:07.713
+clm98vyf50000md08c9f83vvg	shadcn	design engineer ▲	https://shadcn.com	{front,ui}	https://shadcn-a7uzxr0jy-shadcn-pro.vercel.app/opengraph-image.jpg?cec3166ab988a1dc	clldpr0xs00009gd8mn4bb7hv	clldpr18w00019gd8zo6jiizb	clldrix050001ml08kmtz6zdn	2023-09-07 14:09:40.85	2023-09-07 14:09:40.85
+clo6x8d890002md082f14yh5i	Connection - SphinxOnline EDUC		https://educ.sphinxonline.net/sphinxauth/Account/Login	{}	/config/images/logos/logo_platform_100.png	clmrpxxg7000444aeox804clc	clo5wf4dp0005mi08bmwuoxcu	clo67t8xm0000l309g9wj3mzl	2023-10-26 08:27:16.857	2023-10-26 08:27:35.78
+clo6y6ugj0002l108qylb6hrb	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	{}	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	clmrpxxg7000444aeox804clc	clo5wf4dp0005mi08bmwuoxcu	clo5wuyl00000jy0822pr4r2i	2023-10-26 08:54:05.492	2023-10-26 08:54:05.492
+clmav5gwo0000kv08tp1wg2nw	Content Design by Sarah Winters, Paperback - Content Design London	Short, lively and practical with real-world examples, the book takes you through the content design process, explaining everything along the way.	https://contentdesign.london/shop/content-design-by-sarah-winters-paperback	{Ouvrage,writing,Club,communaute,GB,Angleterre}	https://contentdesign.london/img/asset/YXNzZXRzL3NvY2lhbC1pbWFnZS0xNjY5MTE2MjkwLnBuZw==?w=1200&q=70&s=ab1b251d32c48ec4978cf98ef2fd6c18	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmadfnvd0000ic08tvrgrx1k	2023-09-08 17:20:42.455	2023-09-08 17:25:01.638
+clmbqudee0000mh087ttaaqb3	UX Writing: Study Guide	A guide by Nielsen Norman group	https://www.nngroup.com/articles/ux-writing-study-guide/	{NNG,guide,writing}	https://media.nngroup.com/media/articles/opengraph_images/UX_writing_study_guide_47.png	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmadfnvd0000ic08tvrgrx1k	2023-09-09 08:07:52.406	2023-09-09 08:10:57.67
+clmg4wm390000lc08r7vckslr	21. Comment intégrer l'UX Writing dans une équipe design ? - avec Paul Thanasack - UX Content Craft | Podcast on Spotify	Listen to this episode from UX Content Craft on Spotify. Internet a été conçu pour partager de l’information et échanger, mais pendant plusieurs années, on a perdu de vue l’importance des contenus. On a perdu de vue l’humain, les échanges, les conversations. La forme a pris le pas sur le fond. Et puis progressivement, des métiers comme l’UX design, l’UI design, et l’UX research ont émergé. Quand on conçoit une interface web ou mobile, il est maintenant logique de constituer une équipe design. Sauf que. On a beau faire une interface orientée utilisateurs, si on n’a pas les bons mots qui vont guider ces utilisateurs, qui vont les encourager à passer à l’action, qui vont parler comme eux, qui vont les rassurer, les féliciter… Cela va être difficile de proposer une interface utile et utilisable. Pour vous donner un exemple plutôt excessif, imaginez Facebook ou LinkedIn sans mots. C’est parce que les designers se sont rendus compte de l’importance des mots et qu’ils n’avaient pas les compétences nécessaires en écriture, que le métier d’UX Writer a émergé ces dernières années. La place de la rédaction UX est encore timide aujourd’hui, mais les grands groupes s’en emparent progressivement. À l’instar d’Adeo, la maison mère de Leroy Merlin. Les designers ont fait remonter le besoin d’avoir une aide pour trouver les bons mots. Alors, au lieu d’interviewer l’UX Writer arrivé il y a quelque temps, je me suis dit qu’il était intéressant d’avoir le point de vue d’un UX designer. J’ai donc échangé avec Paul Thanasack, Head of UX chez Adeo, pour :   Comprendre comment a émergé le besoin  Comprendre pourquoi les équipes design ont fait appel à un UX Writer  Savoir comment il a été intégré dans les équipes design  Savoir ce que cela a changé pour les équipes et les utilisateurs  Comment intégrer un UX Writer dans une équipe design est une question qui revient assez souvent. Alors, si vous êtes UX designer, j’espère que cet épisode va vous aider dans votre quête :). Bonne écoute ! Retrouvez toutes les notes de l'épisode sur mon site ;) Merci à @10deDer pour la musique. Vous voulez améliorer la lisibilité et les contenus de votre interface web ou mobile ? Abonnez-vous à ma newsletter et recevez, deux fois par mois, des tips, des ressources et du contenu exclusif.	https://open.spotify.com/episode/3whtxt4gzCA3N5GewZJCv9	{podcast,uxwriting,team}	https://i.scdn.co/image/ab6765630000ba8af152302b5ea13fe5ec601e25	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmadfnvd0000ic08tvrgrx1k	2023-09-12 09:52:36.31	2023-09-12 09:52:36.31
+clmrqycwj0000l408wb7wyrx9	A Beginner's Guide To UX Writing (Full Guide) - YouTube	UX writing is the art of crafting the text that appears throughout the interface of digital products (websites, mobile apps, etc.). As the apps and websites ...	https://youtu.be/hsMLqUFtPbU?si=pxIN-EWkVoMVxNYn	{video,youtube,UXwriting,beguinner,guide}	https://i.ytimg.com/vi/hsMLqUFtPbU/maxresdefault.jpg	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmadfnvd0000ic08tvrgrx1k	2023-09-20 12:55:17.192	2023-09-20 12:55:17.192
+clmt8iao20001mp082161sgwg	Padlet: Beauty will save the work	Make beautiful boards to collect, organize, and present anything. Used by over 30 million people worldwide. Get started for free.	https://padlet.com	{benchmark,concurrent}	https://padlet.net/meta/opengraph.jpg	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrkto00000l70800w723yh	2023-09-21 13:54:27.073	2023-09-21 13:54:27.073
+clmt764bc0000ml085qlpn16q	   \n  Vous voulez créer ou reprendre une entreprise ? Retrouvez toutes les informations pour réussir votre création\n  d’entreprise.\n	création d’entreprise	https://bpifrance-creation.fr/	{Sitegeneral}	https://bpifrance-creation.fr/themes/afe/assets/bpi_images/Logo-Bpifrance.png	clldpr0xs00009gd8mn4bb7hv	clmt178mu0000mt08y3ru283t	clmt70npf0000l1088havq6bv	2023-09-21 13:16:59.351	2023-09-21 13:27:45.57
+clmumxcpd0000js0874630bd3	Accueil - La Revue du Digital	« La Revue du Digital » est un site de presse indépendant qui informe les professionnels impactés par le digital et l’informatique dans leur activité en entreprise.	https://www.larevuedudigital.com/	{tech,marches,business}	https://www.larevuedudigital.com/wp-content/uploads/2023/07/Data-Guide_Medias_NL_660x440.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsurwih0008mi08v6qdnysw	2023-09-22 13:25:50.351	2023-09-22 13:25:50.351
+clmumz5tn0000ms085ftxeg3j	\n   Material Design\n  	Build beautiful, usable products faster. Material Design is an adaptable system—backed by open-source code—that helps teams build high quality digital experiences.	https://m3.material.io/	{Ui,ux}	https://m3.material.io/static/assets/m3-social.jpg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuqi3b0003mi08hb4wc74f	2023-09-22 13:27:14.746	2023-09-22 13:27:14.746
+clmun23qq0001ms086dzlk0t4	Applications d’animation 2D, animation Flash | Animate	Créez des films d’animation Flash, des GIF et des dessins animés avec Animate. Achetez l’application d’animation 2D pour ses outils d’interpolation et de contrôle de marionnettes.	https://www.adobe.com/fr/products/animate.html	{video,animation}	https://www.adobe.com/content/dam/cc/default-meta-image.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsurpea0007mi08qphbs4ot	2023-09-22 13:29:32.017	2023-09-22 13:29:32.017
+clmunekhr0000jl08caa52za8	Powering the world's WebAR | 8th Wall	8th Wall	https://www.8thwall.com/	{AR,WebAR}	https://cdn.8thwall.com/web/share/8th_Wall_Metadata_SocialCover_2h7lvb7w0dj72yyytw4n0u9ckr43p6ka8785l1i2d7fryd4uei4svgpx.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsurpea0007mi08qphbs4ot	2023-09-22 13:39:13.598	2023-09-22 13:43:02.287
+clmuncgiw0001js08rriiciay	PlayCanvas WebGL Game Engine	The open source PlayCanvas HTML5 game engine, built on WebGL and glTF, for building games, playable ads, visualizations, VR and AR.	https://playcanvas.com/	{AR,WebAR}	https://playcanvas.com/assets/images/PlayCanvas-OG-Image.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsurpea0007mi08qphbs4ot	2023-09-22 13:37:35.142	2023-09-22 13:42:50.776
+clnd77ewx0000l409bv4dzan2	L'association francophone des professionnels Flupa de l'expérience utilisateur		https://flupa.eu/	{organisme,ux,association}	https://flupa.eu/wp-content/uploads/2020/11/logo-flupa@2x-1.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuqsqh0005mi08p27k5tns	2023-10-05 13:13:23.264	2023-10-31 12:33:15.39
+clmszkdus0000lc08n4c1jr6g	The Design Thinking behind the GSD’s New Identity - Harvard Graduate School of Design	Harvard University's Graduate School of Design unveils a new visual identity that embodies its mission to educate today's design leaders.	https://www.gsd.harvard.edu/2023/08/the-design-thinking-behind-the-graduate-school-of-designs-new-identity/	{logo,charte,harvard,branding}	https://www.gsd.harvard.edu/wp-content/uploads/2023/08/gsd_logo_hero_image2.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuq5970002mi08026t8n4q	2023-09-21 09:44:07.971	2023-12-17 16:47:35.607
+clmunz2hh0000lf08zmrhc4nr	Meta Quest Developer Center| Meta for Developers	Find the latest documentation, tools, and support to design, build, and launch your VR application.	https://developers.facebook.com/products/oculus/	{Quest2,VR}	https://www.facebook.com/tr?id=675141479195042&ev=PageView&noscript=1	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuplbr0000mi08bt0yv1a1	2023-09-22 13:55:10.036	2023-09-22 13:55:10.036
+clmvs4aio0000l4082qtjx3m1	Appareils compatibles avec ARCore  |  Google for Developers	Obtenez la liste des appareils Android et iOS compatibles avec ARCore, ou téléchargez un fichier CSV.	https://developers.google.com/ar/devices?hl=fr	{}	https://www.gstatic.com/devrel-devsite/prod/va881901acfa784a302a2fcaebeaf9ea1e7654afe884686768d3a16b36e928e9f/developers/images/opengraph/light-blue.png	clldpr0xs00009gd8mn4bb7hv	clldpr18w00019gd8zo6jiizb	clldrix050001ml08kmtz6zdn	2023-09-23 08:38:58.366	2023-09-23 08:38:58.366
+clnbx38bi0001jw085j1gbel2	Wireframe.cc – The Go-to Free, Online Wireframing Tool.	Create and share better wireframes with a powerful, intuitive low-fidelity wireframing tool.	https://wireframe.cc	{wireframe}	https://cdn.wireframe.cc/images/wireframe_homepage.png	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrkto00000l70800w723yh	2023-10-04 15:42:25.759	2023-10-04 15:42:25.759
+clmx7jklw0000mg09vk71t175	PARTLY CLOUDY - YouTube		https://youtu.be/PfyJQEIsMt0?si=SOmHNKgpsbPYkfi7	{pixar,video}	https://i.ytimg.com/vi/PfyJQEIsMt0/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGGUgVChTMA8=&rs=AOn4CLCGZ6fnq51dDnTx1vjhw21gIaCyIg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmun0x990000mg08izdaayzq	2023-09-24 08:38:31.699	2023-09-27 15:45:30.46
+clmunlpo40000l108l762j2tm	Unreal Engine | Le plus puissant des outils de création 3D en temps réel - Unreal Engine	Créez des visuels photoréalistes et des expériences immersives avec l'Unreal Engine, l'outil de création 3D en temps réel le plus ouvert et le plus avancé au monde.	https://www.unrealengine.com/fr	{AR,VR,3d}	https://cdn2.unrealengine.com/new-logo-share-1400x788-03-1400x788-c9d09f067a09.jpg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsurpea0007mi08qphbs4ot	2023-09-22 13:44:46.898	2023-09-29 06:38:49.476
+clmxfxpqk0000k3088ohef0p8	Comment aborder le design dans une démarche d’éco-conception ? (Damien Legendre) - YouTube	Les chiffres alarmants de l’impact du numérique sur le climat sont clairs. Il est désormais temps de comprendre comment passer du constat à la mise en pratiq...	https://www.youtube.com/watch?v=BUCug7v6o6k&list=PLv7xGPH0RMUQC6eKGeEXO4PzvKdsU7z2j&index=17	{ecoconception,video,youtube}	https://i.ytimg.com/vi/BUCug7v6o6k/maxresdefault.jpg	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrioth0000ml08d9esqdtg	2023-09-24 12:33:28.458	2023-09-24 12:33:28.458
+clmyvida80000ml08gxanjfr9	Card sorting	Card sorting is an effective, easy-to-use method for understanding how people think about content and categories. It helps you create information that is easy to find and understand. In Card Sorting: Designing Usable Categories, Donna Spencer shows you how to plan and run a card sort, analyze the results, and apply…	https://rosenfeldmedia.com/books/card-sorting/	{book,rosenfeldmedia}	https://rosenfeldmedia.com/wp-content/uploads/2023/04/4-card-sorting.jpg	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmadfnvd0000ic08tvrgrx1k	2023-09-25 12:37:12.51	2023-09-25 12:37:12.51
+clmyvr7bo0000ju0815vypef8	Table ronde : éco conception - YouTube	Cette table ronde met en lumière les enjeux de l’éco conception en UX design et les solutions pour y répondre. Les intervenants abordent des sujets tels que ...	https://lw.do/FLUPA2023-Ecoconception	{ecoconception,YouTube,Video}	https://i.ytimg.com/vi/OFcGwXFT8v0/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGBMgSyh_MA8=&rs=AOn4CLBvOS8qtumV58b52hq1JOBLaCZfAg	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrioth0000ml08d9esqdtg	2023-09-25 12:44:04.69	2023-09-25 12:44:04.69
+clmyvncc80000mg08d2eqdg7t	Strategic content design	In Strategic Content Design, you’ll learn how content research can transform your content team—bringing new energy and enthusiasm for their work and gaining attention and respect from teams of all types across your company (product management, product design, user research, operations, and engineering). You’ll also get a toolbox with hard-won…	https://rosenfeldmedia.com/books/strategic-content-design/	{book,rosenfeldmedia}	https://rosenfeldmedia.com/wp-content/uploads/2023/04/52-strategic-content-design.jpg	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmadfnvd0000ic08tvrgrx1k	2023-09-25 12:41:04.566	2023-09-26 12:30:09.704
+cln0e9tbp0000me08pnzk6ao9	The platform to build next‒gen apps | Airtable	Airtable is a low‒code platform to build next‒gen apps. Move beyond rigid tools, operationalize your critical data, and reimagine workflows with AI.	https://www.airtable.com	{benchmark,travailcollaboratif}	https://www.airtable.com/images/airtable-seo.jpg	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrkto00000l70800w723yh	2023-09-26 14:10:12.278	2023-09-26 14:10:12.278
+cln488b2j0000mg08nnzcsmig	The Google Cemetery - Dead Google products	The Google Cemetery - Google Graveyard is a List of dead google products and why they died. Discontinued Google projects and reason why they were discontinued.	https://gcemetery.co/	{product,services,dead,google,oldies}	https://gcemetery.co/wp-content/uploads/2019/10/halloween-gcemetery.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuqsqh0005mi08p27k5tns	2023-09-29 06:32:08.97	2023-09-30 13:24:56.18
+cln62tulv0001l308odeyfzia	La marque de l'État | Gouvernement.fr	Là où l’État est présent, agit, finance, sa présence doit être clairement identifiée.	https://www.gouvernement.fr/marque-Etat	{charte,france,Branding}	https://www.gouvernement.fr/sites/all/themes/custom/gouvernement/img/thumbnail_site.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuq5970002mi08026t8n4q	2023-09-30 13:36:28.705	2023-11-01 15:26:14.731
+cln3fgquy0000jl09puxqenxr	Louis-Étienne Girard - Développeur Front-End React	Passionné de longue date pour le développement web, je ne cesse de partager mes connaissances dans le domaine digital.	https://louisetiennegirard.fr	{dev}	https://louisetiennegirard.fr/media/louis-etienne-girard-developpeur-front-end-react.png	clldpr0xs00009gd8mn4bb7hv	clldpr18w00019gd8zo6jiizb	clldrix050001ml08kmtz6zdn	2023-09-28 17:06:53.816	2023-11-27 09:24:18.011
+cln64hbg60000jo081hcgqy6j	SAP Services & Solutions | Globant Solutions - Globant Solutions	Maximize your results through our SAP services. Discover how Globant's SAP solutions work to optimize your processes.	https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwjzu62mw9KBAxVpjGgJHaz-AKYYABAAGgJ3Zg&ae=2&gclid=Cj0KCQjwjt-oBhDKARIsABVRB0xwPYYT5yWGMzTezlzqtPiaXJh0IqhQ_P46SFQkUBG_e5WcTQXySKkaAhoIEALw_wcB&ohost=www.google.com&cid=CAESVuD2fzEY70bwB3erTMbBu0_nEsOTd-dBoRLq2Ilt5G2RL3c0rymvWYiIZ4xb82kuklKosyxtXy9ItLf-iOT1pN4GbzAgIWDI2Ntwfxe8kcEQ8uG-0Cs3&sig=AOD64_0PXDS8mNi52huc2oK_CmMEcPjHPg&q&adurl&ved=2ahUKEwiAnqamw9KBAxUsMuwKHd2dDE0Q0Qx6BAgMEAE&nis=8&dct=1	{ptrestataire,formulaire}	https://now.globant.com/wp-content/uploads/2023/06/NOW-SAP_EN-OG.png	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmt70npf0000l1088havq6bv	2023-09-30 14:22:43.253	2023-09-30 14:22:43.253
+cln64hblj0001jo08pr73xkud	SAP Services & Solutions | Globant Solutions - Globant Solutions	Maximize your results through our SAP services. Discover how Globant's SAP solutions work to optimize your processes.	https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwjzu62mw9KBAxVpjGgJHaz-AKYYABAAGgJ3Zg&ae=2&gclid=Cj0KCQjwjt-oBhDKARIsABVRB0xwPYYT5yWGMzTezlzqtPiaXJh0IqhQ_P46SFQkUBG_e5WcTQXySKkaAhoIEALw_wcB&ohost=www.google.com&cid=CAESVuD2fzEY70bwB3erTMbBu0_nEsOTd-dBoRLq2Ilt5G2RL3c0rymvWYiIZ4xb82kuklKosyxtXy9ItLf-iOT1pN4GbzAgIWDI2Ntwfxe8kcEQ8uG-0Cs3&sig=AOD64_0PXDS8mNi52huc2oK_CmMEcPjHPg&q&adurl&ved=2ahUKEwiAnqamw9KBAxUsMuwKHd2dDE0Q0Qx6BAgMEAE&nis=8&dct=1	{ptrestataire,formulaire}	https://now.globant.com/wp-content/uploads/2023/06/NOW-SAP_EN-OG.png	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmt70npf0000l1088havq6bv	2023-09-30 14:22:43.447	2023-09-30 14:22:43.447
+cln64icup0002jo08666se95p	SAP Services & Solutions | Globant Solutions - Globant Solutions	Maximize your results through our SAP services. Discover how Globant's SAP solutions work to optimize your processes.	https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwjzu62mw9KBAxVpjGgJHaz-AKYYABAAGgJ3Zg&ae=2&gclid=Cj0KCQjwjt-oBhDKARIsABVRB0xwPYYT5yWGMzTezlzqtPiaXJh0IqhQ_P46SFQkUBG_e5WcTQXySKkaAhoIEALw_wcB&ohost=www.google.com&cid=CAESVuD2fzEY70bwB3erTMbBu0_nEsOTd-dBoRLq2Ilt5G2RL3c0rymvWYiIZ4xb82kuklKosyxtXy9ItLf-iOT1pN4GbzAgIWDI2Ntwfxe8kcEQ8uG-0Cs3&sig=AOD64_0PXDS8mNi52huc2oK_CmMEcPjHPg&q&adurl&ved=2ahUKEwiAnqamw9KBAxUsMuwKHd2dDE0Q0Qx6BAgMEAE&nis=8&dct=1	{prestataire,formulaires}	https://now.globant.com/wp-content/uploads/2023/06/NOW-SAP_EN-OG.png	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmt70npf0000l1088havq6bv	2023-09-30 14:23:31.728	2023-09-30 14:23:31.728
+clmvqsjea0000lj08lq0rehgo	L'annuaire des Start up de France | Base de données Start up France	Retrouvez l'annuaire social des Start up de France, tous les jours. La liste de start up de France dans une base de données qualifiée.	https://lespepitestech.com/	{startup,tech,annuaire,licornes}	https://d3kqkuy1hpjocx.cloudfront.net/s3fs-public/home_6.jpg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsurwih0008mi08v6qdnysw	2023-09-23 08:01:50.384	2023-10-01 12:10:03.063
+cln7hvall0000mr08wj90xzwp	SAP Services & Solutions | Globant Solutions - Globant Solutions	Maximize your results through our SAP services. Discover how Globant's SAP solutions work to optimize your processes.	https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwjzu62mw9KBAxVpjGgJHaz-AKYYABAAGgJ3Zg&ae=2&gclid=Cj0KCQjwjt-oBhDKARIsABVRB0xwPYYT5yWGMzTezlzqtPiaXJh0IqhQ_P46SFQkUBG_e5WcTQXySKkaAhoIEALw_wcB&ohost=www.google.com&cid=CAESVuD2fzEY70bwB3erTMbBu0_nEsOTd-dBoRLq2Ilt5G2RL3c0rymvWYiIZ4xb82kuklKosyxtXy9ItLf-iOT1pN4GbzAgIWDI2Ntwfxe8kcEQ8uG-0Cs3&sig=AOD64_0PXDS8mNi52huc2oK_CmMEcPjHPg&q&adurl&ved=2ahUKEwiAnqamw9KBAxUsMuwKHd2dDE0Q0Qx6BAgMEAE&nis=8&dct=1	{sap}	https://now.globant.com/wp-content/uploads/2023/06/NOW-SAP_EN-OG.png	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmt70npf0000l1088havq6bv	2023-10-01 13:25:16.52	2023-10-01 13:25:16.52
+cln62uxm30000mj09f9jkt1ra	Orange brand guidelines · Boosted	Have a need for Boosted’s brand resources? We have a few guidelines we follow, and in turn ask you to follow as well.	https://boosted.orange.com/docs/4.4/about/brand/	{charte,branding,graphic}	http://boosted.orange.com/docs/4.4/assets/brand/orange-social.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuq5970002mi08026t8n4q	2023-09-30 13:37:19.274	2023-11-01 15:25:49.704
+cln7kasfj0000l1085b5o1hoh	\t\t\t\t\t\t\t\t\t\t\t\t\tAlumni UCO : le réseau des diplômés de l'Université catholique de l'Ouest	Découvrez le réseau Alumni UCO : la plateforme pour les diplômés de l'Université catholique de l'Ouest. Rejoignez une communauté dynamique, explorez des opportunités professionnelles, participez à des événements, et restez connectés à l'UCO !	https://alumni.uco.fr/fr/	{alumni,uco}	https://alumni.uco.fr/images/upload/2023113225_logo-alumni-v-q-vect.png	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmt70npf0000l1088havq6bv	2023-10-01 14:33:18.696	2023-10-01 14:33:18.696
+clnaapqm30000mq085gulagrw	Realtime Colors	Visualize your colors and fonts on a real website.	https://www.realtimecolors.com/	{ui,colors,web,figma}	https://github.com/juxtopposed/realtimecolors/blob/main/images/preview.png?raw=true	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clnaat2fm0000mo08ea6eph1r	2023-10-03 12:28:18.554	2023-10-03 12:32:54.468
+clnaejtwl0000mi089vxejecy	Pretotyping.org - Home	Site officiel sur le pretotyping	https://www.pretotyping.org	{savoia,wireframe,pretotype}	https://www.pretotyping.org/uploads/1/4/0/9/14099067/editor/the-right-it-3d-for-website.png?1551128339	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrioth0000ml08d9esqdtg	2023-10-03 14:15:41.348	2023-10-03 14:15:41.348
+clnaem6h10001mi08sufz7r17	ALBERTO SAVOIA - Alberto Savoia	Introduction to Alberto Savoia	https://www.albertosavoia.com	{pretotyping,innovation,google}	https://www.albertosavoia.com/uploads/1/4/0/9/14099067/published/alberto-with-google-jacket-and-background_1.jpg?1536507563	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrioth0000ml08d9esqdtg	2023-10-03 14:17:30.947	2023-10-03 14:17:30.947
+clnaep0h80000l7082y6oj0vk	Design - onepoint	Qu’on l’utilise comme verbe ou comme adjectif, le mot design incarne à lui seul de multiples qualités : plus utile, plus humain…	https://www.groupeonepoint.com/fr/expertises/design/	{ESN,expertisedesign}	https://www.groupeonepoint.com/wp-content/uploads/2021/01/design-compressed-3-scaled.jpg	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmd6gjmh0001jq08pfjbyolt	2023-10-03 14:19:43.146	2023-10-03 14:19:43.146
+clnaeqqle0001l7089th7qzo9	Wireframe : les 4 meilleurs outils pour créer des maquettes de site ou d'applications mobile	Découvrez des logiciels de wireframing pour concevoir des maquettes fonctionnelles et des prototypes animés d’interfaces utilisateur.	https://www.blogdumoderateur.com/tools/design/wireframe/	{Wireframe}	https://f.hellowork.com/bdmtools/2022/02/og-img-defaut-1200x628.jpg	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrkto00000l70800w723yh	2023-10-03 14:21:03.649	2023-10-03 14:21:03.649
+clnaeruz80000mi08541ljisz	SAP Services & Solutions | Globant Solutions - Globant Solutions	Maximize your results through our SAP services. Discover how Globant's SAP solutions work to optimize your processes.	https://www.googleadservices.com/pagead/aclk?sa=L&ai=DChcSEwjzu62mw9KBAxVpjGgJHaz-AKYYABAAGgJ3Zg&ae=2&gclid=Cj0KCQjwjt-oBhDKARIsABVRB0xwPYYT5yWGMzTezlzqtPiaXJh0IqhQ_P46SFQkUBG_e5WcTQXySKkaAhoIEALw_wcB&ohost=www.google.com&cid=CAESVuD2fzEY70bwB3erTMbBu0_nEsOTd-dBoRLq2Ilt5G2RL3c0rymvWYiIZ4xb82kuklKosyxtXy9ItLf-iOT1pN4GbzAgIWDI2Ntwfxe8kcEQ8uG-0Cs3&sig=AOD64_0PXDS8mNi52huc2oK_CmMEcPjHPg&q&adurl&ved=2ahUKEwiAnqamw9KBAxUsMuwKHd2dDE0Q0Qx6BAgMEAE&nis=8&dct=1	{SAP}	https://now.globant.com/wp-content/uploads/2023/06/NOW-SAP_EN-OG.png	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmt70npf0000l1088havq6bv	2023-10-03 14:21:55.975	2023-10-03 14:21:55.975
+clnbwe2ck0000jw08xjugr0j3	Microsoft OneNote | L’application de prise de notes numériques pour vos appareils		https://www.onenote.com/?omkt=fr-FR&public=1	{Microsoft,prisedenote}	https://site-cdn.onenote.net/161700240455_Images/home/new/hero.png	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrkto00000l70800w723yh	2023-10-04 15:22:51.618	2023-10-04 15:22:51.618
+clnbwg6g90000l80850zep0sp	SAP Services & Solutions | Globant Solutions - Globant Solutions	Maximize your results through our SAP services. Discover how Globant's SAP solutions work to optimize your processes.	https://now.globant.com/en/sap-services/?utm_source=google&utm_medium=cpc&utm_campaign=a-mkt_r-eme_bo-crp_cn-sap_s-google_m-cpc_o-ldg_bi-cpc_f-tx_y-2023_id-100111_ac-ao_t-emea&gclid=Cj0KCQjwjt-oBhDKARIsABVRB0xwPYYT5yWGMzTezlzqtPiaXJh0IqhQ_P46SFQkUBG_e5WcTQXySKkaAhoIEALw_wcB	{sap}	https://now.globant.com/wp-content/uploads/2023/06/NOW-SAP_EN-OG.png	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmt70npf0000l1088havq6bv	2023-10-04 15:24:30.25	2023-10-04 15:24:30.25
+clnbwldwm0000l0081xagaizu	Mirro | Performance management software for agile teams	Mirro.io - Performance management software ✅ Easy performance management ⭐️ Engage your people ✅ Monitor results	https://mirro.io	{Mirro,software}	https://25913880.fs1.hubspotusercontent-eu1.net/hubfs/25913880/Social_share_home.jpg#keepProtocol	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrkto00000l70800w723yh	2023-10-04 15:28:33.189	2023-10-04 15:28:33.189
+clnd7w5mo0000l109ypqvkuwt	 Jira | Issue & Project Tracking Software | Atlassian 	Make the impossible, possible in Jira. Plan, track, and release world-class software with the number one project management tool for agile teams.	https://www.atlassian.com/software/jira	{planning,dev,tickets}	https://wac-cdn.atlassian.com/dam/jcr:9e1841b9-2557-4eb2-ab47-d92428580b02/Jira%20Software@2x-blue.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clnd7p07n0000l608t9ghres0	2023-10-05 13:32:37.544	2023-10-05 13:32:37.544
+clnd7e0aq0001l4095x82xpee	User Experience Professionals Association (UXPA)	User Experience Professionals Association (UXPA) International supports people who research, design, and evaluate the user experience (UX) of products and services.	https://uxpa.org/	{association,organisme,ux}	https://uxpa.org/wp-content/uploads/sites/9/2017/10/cropped-uxpaINTERN_web216x374px-3.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuqsqh0005mi08p27k5tns	2023-10-05 13:18:30.915	2023-10-05 13:19:55.698
+clnd803sk0001l60835yuxg41	Gérez les projets de votre équipe, où que vous soyez | Trello	Trello est l'outil de gestion de projet n° 1. Configurez un tableau en quelques secondes, automatisez les tâches fastidieuses et collaborez où que vous soyez, même sur mobile.	https://trello.com/fr	{planning,task,tickets}	//images.ctfassets.net/rz1oowkt5gyp/75rDABL8fyMtNLlUAtBxrg/c5e145977a86c41c47e17c69410c64f7/TrelloUICollage_4x.png?w=540	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clnd7p07n0000l608t9ghres0	2023-10-05 13:35:41.871	2023-10-08 15:36:05.331
+clnikyf7d0000l3083pjq39xc	TUNA KNOBS - Pepperdecks | Mix your Music, Anywhere, Anytime	Pepperdecks | Mix you Music, anywhere, anytime	https://www.pepperdecks.com/products/28-tunagear	{touch,potentiometer,controller}	/images/logo-pepperdecks.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuplbr0000mi08bt0yv1a1	2023-10-09 07:37:09.241	2023-10-09 07:37:09.241
+clnncv87s0000mg08rkvyghtm	1. Introduction - thematique-design-persuasif - thematique-design-persuasif/concevoir-sans-dark-patterns - Designers Éthiques		https://beta.designersethiques.org/thematique-design-persuasif/concevoir-sans-dark-patterns/1-introduction	{darkpatterns,ethique}	https://beta.designersethiques.org/designersethiques.org/media/pages/thematique-design-persuasif/concevoir-sans-dark-patterns/261fd915a2-1696397793/banniere-site-2-1.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuqsqh0005mi08p27k5tns	2023-10-12 15:49:34.167	2023-10-12 15:49:34.167
+clnpxh7wp0000l508zyl47btf	About | Exponentially	We're a boutique consultancy working alongside world-class organisations to \ninnovate and grow through our rapid experimentation framework. Learn more \nabout us.	https://www.exponentially.com/about	{pretotype,australie,desirabilite}	http://static1.squarespace.com/static/62e9d3c561798d0451c785cd/t/63227324e756481627c12e2f/1663202086436/Exponentially_AboutUs_SocialImage.png?format=1500w	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrioth0000ml08d9esqdtg	2023-10-14 11:02:04.872	2023-10-14 11:02:04.872
+clnsoasxw0000kv088jxhqp9t	Everything you need to know as a UI designer about spacing & layout grids | by Molly Hellmuth | Design with Figma | Medium	The key to every great design is the organization of its information. Spacing methods and layout grids define structure, hierarchy, and rhythm in your design. When correctly used, they reduce…	https://medium.com/design-with-figma/everything-you-need-to-know-as-a-ui-designer-about-spacing-layout-grids-2bc269e12321	{figma,grid,layout}	https://miro.medium.com/v2/da:true/resize:fit:950/1*bEV-7vqI88SpqhJt-4y_xg.gif	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clnaat2fm0000mo08ea6eph1r	2023-10-16 09:08:27.522	2023-10-16 09:08:27.522
+clnu4lpy80000l108cq5vdrpb	Graphic Design Trends 2024 [18 styles explained] - YouTube	Looking to stay ahead of the curve when it comes to graphic design? In this video, i explore the cutting-edge trends, along with the styles, techniques, and ...	https://www.youtube.com/watch?v=-jRkI1nOwbc	{web,tendances,trends,graphic,visual,video}	https://i.ytimg.com/vi/-jRkI1nOwbc/maxresdefault.jpg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuqote0004mi0889qfuy7u	2023-10-17 09:32:36.894	2023-10-17 12:01:21.198
+clnwrlfgt0000kx08hxmkhh6h	The branding style guidelines documents archive	Welcome to the brand design manual documents directory. Search over our worldwide style assets handpicked collection, access to PDF documents for inspiration.	https://brandingstyleguides.com/	{charte,graphique,logo,couleurs,typographie}	https://brandingstyleguides.com/wp-content/themes/brandingstyleguides/img/logo-branding-style-guides.svg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuq5970002mi08026t8n4q	2023-10-19 05:51:46.828	2023-10-19 05:51:46.828
+clo68c5pt0000jm08lfoiu3y8	Ux writing - Quand le contenu transforme l'expérience - Gladys... - Librairie Eyrolles	L’experte en UX Writing  propose des cas concrets sont présentés pour améliorer l’expérience des utilisateurs qui utilisent des services.	https://www.eyrolles.com/Informatique/Livre/ux-writing-9782212679809/	{Ouvrage,Eyrolles,Contenuecrit}	https://servimg.eyrolles.com/static/media/9809/9782212679809_internet_h1400.jpg	clmrpxxg7000444aeox804clc	clmrpxxvh000544aexo3ihmtc	clo5wiqio0000kx092y0p0een	2023-10-25 20:50:23.338	2023-10-25 20:50:23.338
+clnwwc8vn0000lf08ed87xl5o	Expériences | Immersion	Blog de veille et de test de la société Immersion	https://www.immersion.fr/experiences/ 	{VR,AR,XR}	https://www.immersion.fr/wp-content/uploads/2023/06/logo-immersion-2.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuqi3b0003mi08hb4wc74f	2023-10-19 08:04:36.466	2023-10-19 08:05:09.66
+clnwwqrki0000l908gnkdwow5	Pourquoi penser les sites sous le prisme de l'accessibilité ? on Vimeo	Justine, UX Researcher, et Yohan, Designer UX/UI, reviennent sur une étude menée à l'Agence : l'accessibilité web pour les…	https://vimeo.com/875214770	{accessibilite,lunaweb,video}	https://i.vimeocdn.com/video/1739666587-b669406f6bfd43ceb480d652a4be6ca9c9bbf19fe3044837ab7a892b89b54d60-d?f=webp	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clldrioth0000ml08d9esqdtg	2023-10-19 08:15:53.873	2023-10-19 08:15:53.873
+clo3zy0800000lf08tnwwnukq	AttrakDiff		https://attrakdiff.de/index-en.html	{}	i/AttrakDiff_logo.png	clldpr0xs00009gd8mn4bb7hv	clo3aznzg0000me0852abnf7w	clldrioth0000ml08d9esqdtg	2023-10-24 07:19:53.758	2023-10-24 07:19:53.758
+clo4b6wi50000ju08gjlj4fwi	AVIF has landed - JakeArchibald.com		https://jakearchibald.com/2020/avif-has-landed/	{photo,compression,images}	https://jakearchibald.com/c/post-b81c84fb.jpg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clnaat2fm0000mo08ea6eph1r	2023-10-24 12:34:44.62	2023-10-24 12:34:44.62
+clo5vktp20000k4085vdqfqnc	 Usabilis - Conseil & formation UX Design, ergonomie, Design Thinking 	☎ 01 57 63 86 58. Usabilis est une agence conseil en UX et ergonomie. Nous vous accompagnons dans la conception de vos services et produits digitaux.	https://www.usabilis.com	{video,zer,zretrytruytiuyoi,retretryreu}	https://www.usabilis.com/wp-content/uploads/2019/01/Usabilis_Home_1200x628.png	clldpr0xs00009gd8mn4bb7hv	clo3aznzg0000me0852abnf7w	clldrioth0000ml08d9esqdtg	2023-10-25 14:53:12.66	2023-10-25 14:53:12.66
+clnvdffcj0000lb08wf530o7p	Appareils compatibles avec ARCore  |  Google for Developers	Obtenez la liste des appareils Android et iOS compatibles avec ARCore, ou téléchargez un fichier CSV.	https://developers.google.com/ar/devices?hl=fr	{ARCORE,AR,Android}	https://www.gstatic.com/devrel-devsite/prod/v2c48eb04fdec444f5c1f2fd26274f191139cb4456c7d1252609c83fa9ab9717e/developers/images/opengraph/light-blue.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuplbr0000mi08bt0yv1a1	2023-10-18 06:27:25.938	2023-11-20 09:00:05.971
+clnww9nqk0000mk08iyqwqxus	color.adobe.com	color.adobe.com	color.adobe.com	{color,charte,nuanciers,couleurs,chromatique}	color.adobe.com	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuq5970002mi08026t8n4q	2023-10-19 08:02:35.755	2023-11-27 09:20:54.623
+clo6wasbw0004l6086rh6pq24	Miro | L’espace de travail visuel pour l’innovation	Miro est un espace de travail visuel pour l’innovation où les équipes gèrent les projets, conçoivent les produits et créent le futur ensemble. Rejoignez plus de 60 millions d’utilisateurs de par le monde.	https://miro.com/fr/	{site}	https://static-website.miro.com/miro-site-lp-build-assets/assets/images/miro.png	clmrpxxg7000444aeox804clc	clo5wg26d0009mi08ib4l4k0v	clo67t8xm0000l309g9wj3mzl	2023-10-26 08:01:10.122	2023-10-26 08:02:14.843
+clo6wglf20008l508568gw117	\n      Google Forms : outil de création de formulaires en ligne | Google Workspace\n    	Créez des formulaires et des enquêtes en ligne combinant différents types de questions avec Google Forms. Analysez les résultats en temps réel et depuis n'importe quel appareil.	https://www.google.fr/intl/fr/forms/about/	{sondage}	https://kstatic.googleusercontent.com/files/9f04faac24aed8bf8fb381029de951128d1d36373f89675265a6654d0c47b74b2d83a26b68b834ce2eea3bfe8001966f76895888138f135a81d099fc207c73bb	clmrpxxg7000444aeox804clc	clo5wg26d0009mi08ib4l4k0v	clo67t8xm0000l309g9wj3mzl	2023-10-26 08:05:41.101	2023-10-26 08:05:41.101
+clo6wjkwx000fmj082lorhlas	Visualisez et mettez en œuvre vos projets | Lucidchart	Lucidchart est un espace de travail visuel et collaboratif permettant de créer des diagrammes. Inscrivez-vous gratuitement et profitez de nos modèles et intégrations !	https://www.lucidchart.com/pages/fr/landing?utm_source=google&utm_medium=cpc&utm_campaign=_chart_fr_allcountries_mixed_search_brand_exact_&km_CPC_CampaignId=1535987490&km_CPC_AdGroupID=60295220322&km_CPC_Keyword=lucidchart&km_CPC_MatchType=e&km_CPC_ExtensionID=&km_CPC_Network=g&km_CPC_AdPosition=&km_CPC_Creative=309039280270&km_CPC_TargetID=kwd-33511936169&km_CPC_Country=9055674&km_CPC_Device=c&km_CPC_placement=&km_CPC_target=&gad_source=1&gclid=CjwKCAjwnOipBhBQEiwACyGLum_oLisGUgfwOKWqnH_iIQaPJGPwJCCLULC7Bfx2KSxnfUSZWpl-VxoCH3IQAvD_BwE	{}	https://cdn-cashy-static-assets.lucidchart.com/lucid/logos/lucid.svg	clmrpxxg7000444aeox804clc	clo5wfvzw0008mi088vj4gxdb	clo67t8xm0000l309g9wj3mzl	2023-10-26 08:08:00.417	2023-10-26 08:08:00.417
+clo6w9o380004mj080oz2x6yd	Méthodes de design UX: 30 méthodes fondamentales pour concevoir des expériences optimales | Livre d’occasion\n	Auteur : Carine Lallemand | ISBN : 9782212673982 | Édition : Eyrolles - Livraison gratuite expédiée en 24h, satisfait ou remboursé !	https://shop.labourseauxlivres.fr/products/9782212673982?variant=40208844652633&currency=EUR&utm_medium=product_sync&utm_source=google&utm_content=sag_organic&utm_campaign=sag_organic&utm_source=google&utm_medium=paid&utm_campaign=18756729089&utm_content=&utm_term=&gadid=&gclid=CjwKCAjwnOipBhBQEiwACyGLusLZYgPfiYGKcm2ZST-7_aLb7zc_NguaEm-6ugKMMxLFhsbrVU1N3BoCl58QAvD_BwE	{Ouvrage}	http://shop.labourseauxlivres.fr/cdn/shop/products/41YdM4rWJ_L._SL800.jpg?v=1668710586	clmrpxxg7000444aeox804clc	clo5wgudk000ami085ycihh8j	clo5wjey40001kx09jci2aa8k	2023-10-26 08:00:17.972	2023-10-26 08:02:59.486
+clo6weyoc0006l508pr6bmuvu	Figma: The Collaborative Interface Design Tool	Figma is the leading collaborative design tool for building meaningful products. Seamlessly design, prototype, develop, and collect feedback in a single platform.	https://www.figma.com/	{}	https://cdn.sanity.io/images/599r6htc/localized/a9afeb156fd9d624032026ba5dded124f3265a42-2400x1260.png?w=1200&q=70&fit=max&auto=format	clmrpxxg7000444aeox804clc	clo5wd4cy0001mi08480c1lf2	clo5wie16000dmi08hrrdii5j	2023-10-26 08:04:24.972	2023-10-26 08:04:24.972
+clo6wfic80007l50886bo4nd9	 Qu’est-ce que l’UX Design ? Définition et exemples 	L’UX-Design est une méthode de conception centrée sur l’utilisateur. “UX” (User eXperience, l’expérience utilisateur) et “Design” (conception en français).	https://www.usabilis.com/ux-design/	{}	https://www.usabilis.com/wp-content/uploads/2020/09/definition-UX-Design-mini.jpg	clmrpxxg7000444aeox804clc	clo5wff9h0006mi080d0dw06k	clo5wjey40001kx09jci2aa8k	2023-10-26 08:04:50.456	2023-10-26 08:04:50.456
+clo6wg6tr000al608uv1t3y62	Amazon.fr - UX writing - Le guide de la microcopie: Le guide de la microcopie - Yifrah, Kinneret - Livres	Noté /5. Retrouvez UX writing - Le guide de la microcopie: Le guide de la microcopie et des millions de livres en stock sur Amazon.fr. Achetez neuf ou d'occasion	https://www.amazon.fr/UX-writing-guide-microcopie/dp/2100806858/ref=asc_df_2100806858/?tag=googshopfr-21&linkCode=df0&hvadid=411535311074&hvpos=&hvnetw=g&hvrand=3195716235846171540&hvpone=&hvptwo=&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9055674&hvtargid=pla-862332884876&psc=1&tag=&ref=&adgrpid=92288642049&hvpone=&hvptwo=&hvadid=411535311074&hvpos=&hvnetw=g&hvrand=3195716235846171540&hvqmt=&hvdev=c&hvdvcmdl=&hvlocint=&hvlocphy=9055674&hvtargid=pla-862332884876	{}	//fls-eu.amazon.fr/1/batch/1/OP/A13V1IB3VIYZZH:258-0413503-6082608:VQY56B6AP2R707Q91K08$uedata=s:%2Frd%2Fuedata%3Fstaticb%26id%3DVQY56B6AP2R707Q91K08:0	clmrpxxg7000444aeox804clc	clo5wgudk000ami085ycihh8j	clo5wiqio0000kx092y0p0een	2023-10-26 08:05:22.192	2023-10-26 08:05:40.018
+clo6wkr2a000cl508qx9moboj	Harmonie de couleurs - NAOMI KUNO , Collectif Marabout  - Librairie Eyrolles	Retrouver plus de 2 500 compositions de couleurs par thèmes... 125 palettes de couleurs avec plus de 2 500 exemples, chaque palette propose de nombreuses variantes pour trouver la bonne couleur et la plus belle harmonie. Des expressions pour qualifier les couleurs. Pour...	https://www.eyrolles.com/Audiovisuel/Livre/harmonie-de-couleurs-9782501133487/	{}	https://servimg.eyrolles.com/static/media/3487/9782501133487_internet_h1400.jpg	clmrpxxg7000444aeox804clc	clo5whasd000bmi08u9cm7mib	clo67t8xm0000l309g9wj3mzl	2023-10-26 08:08:55.042	2023-10-26 08:08:55.042
+clo6wluro000cl608iiz7hnls	https://helpx.adobe.com/be_fr/xd/get-started.html	https://helpx.adobe.com/be_fr/xd/get-started.html	https://helpx.adobe.com/be_fr/xd/get-started.html	{}	https://helpx.adobe.com/be_fr/xd/get-started.html	clmrpxxg7000444aeox804clc	clo5wcokk0000mi087iu1iub4	clo67t8xm0000l309g9wj3mzl	2023-10-26 08:09:46.501	2023-10-26 08:09:46.501
+clo6wlxgy000dl608fzmz4fzk	Sketch · Design, collaborate, prototype and handoff	Sketch is the all-in-one platform for digital design — with collaborative design tools, prototyping and developer handoff. Get started for free.	https://www.sketch.com/	{}	https://www.sketch.com/images/metadata/pages/home.jpg	clmrpxxg7000444aeox804clc	clo5wfos70007mi08v7lb9w8g	clo67t8xm0000l309g9wj3mzl	2023-10-26 08:09:50.003	2023-10-26 08:09:50.003
+clo6woqy7000fl6082o0gfmki	Design UI-UX - Les fondamentaux du prototypage	Le prototypage est né bien avant l’ère du numérique et les interfaces liées aux écrans. On observe des prototypes aussi loin que l’on remonte dans l’histoire de la création. Les peintres de la...	https://www.editions-eni.fr/livre/design-ui-ux-concevoir-sites-et-apps-pour-et-avec-les-utilisateurs-2e-edition-9782409041624/les-fondamentaux-du-prototypage	{}	/rsc/shared/images/logo_ENI.svg	clmrpxxg7000444aeox804clc	clo5whasd000bmi08u9cm7mib	clo67t8xm0000l309g9wj3mzl	2023-10-26 08:12:01.52	2023-10-26 08:12:01.52
+clo6wpnta0000mt08ja3dnky2	Basti Ui - YouTube	Design d'interface et graphisme ✌️	https://www.youtube.com/c/BastiUI	{}	https://yt3.googleusercontent.com/ytc/APkrFKZFRzpVFevZ4oX67XwPfHGV_f1m1rcGRJjMBKPfaQ=s900-c-k-c0x00ffffff-no-rj	clmrpxxg7000444aeox804clc	clo5wcokk0000mi087iu1iub4	clo5wie16000dmi08hrrdii5j	2023-10-26 08:12:44.11	2023-10-26 08:12:44.11
+clo6y37ph0000l108daaut7o6	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	{}	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	clmrpxxg7000444aeox804clc	clo5wgudk000ami085ycihh8j	clo5wuyl00000jy0822pr4r2i	2023-10-26 08:51:16.038	2023-10-26 08:51:16.038
+clo6y3i1p0000mi08ojvrbyva	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	{}	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	clmrpxxg7000444aeox804clc	clo5wg26d0009mi08ib4l4k0v	clo5wuyl00000jy0822pr4r2i	2023-10-26 08:51:29.437	2023-10-26 08:51:29.437
+clo6y3pyh0000l708kww31thg	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	{}	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	clmrpxxg7000444aeox804clc	clo5wcokk0000mi087iu1iub4	clo5wuyl00000jy0822pr4r2i	2023-10-26 08:51:39.689	2023-10-26 08:51:39.689
+clo6y44uy0001mi08gmz55tyo	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	{}	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	clmrpxxg7000444aeox804clc	clo5wcokk0000mi087iu1iub4	clo5wuyl00000jy0822pr4r2i	2023-10-26 08:51:59.003	2023-10-26 08:51:59.003
+clo76h7zt0000mc08sdsqilt0	 Usabilis - Conseil & formation UX Design, ergonomie, Design Thinking 	☎ 01 57 63 86 58. Usabilis est une agence conseil en UX et ergonomie. Nous vous accompagnons dans la conception de vos services et produits digitaux.	https://www.usabilis.com/	{}	https://www.usabilis.com/wp-content/uploads/2019/01/Usabilis_Home_1200x628.png	clmrpxxg7000444aeox804clc	clo5wff9h0006mi080d0dw06k	clo5wuyl00000jy0822pr4r2i	2023-10-26 12:46:06.521	2023-10-26 12:46:06.521
+clo70ulwz0000la08oreem0es	Outil – Questionnaire UX AttrakDiff version française – Carine Lallemand	Voici le document de présentation de la version française de l'AttrakDiff, incluant les items pour la passation et les instructions pour le scoring. Vous trouverez plus d'informations dans l'article consacré au questionnaire dans la section Méthodes UX : https://uxmind.eu/2014/06/23/attrakdiff-evaluation-quantitative-ux/ Le document est également téléchargeable au format pdf.	https://uxmind.eu/2015/09/30/outil-attrakdiff-version-francaise/	{attrakdiff,lallemand,echelleux}	https://carinelallemand.files.wordpress.com/2015/09/attrakdiff-version-franc3a7aise_lallemand_2015.png?w=1200	clmrpxxg7000444aeox804clc	clmrpxxvh000544aexo3ihmtc	clo5wjey40001kx09jci2aa8k	2023-10-26 10:08:33.393	2023-10-26 10:12:57.52
+clo71ci6w0001la08lspk5hru	Nielsen Norman Group:  UX Training, Consulting, & Research	A leader in the user experience field, NN/g conducts groundbreaking research, trains and certifies UX practitioners, and provides UX consulting to clients.	https://www.nngroup.com/	{}	https://media.nngroup.com/media/metadata/opengraph_images/Homepage_1.png	clmrpxxg7000444aeox804clc	clo5wcokk0000mi087iu1iub4	clo5wjey40001kx09jci2aa8k	2023-10-26 10:22:28.374	2023-10-26 10:22:28.374
+clo71dd7q0000lc08vgkpyn4z	10 Usability Heuristics for User Interface Design	Jakob Nielsen's 10 general principles for interaction design. They are called "heuristics" because they are broad rules of thumb and not specific usability guidelines.	https://www.nngroup.com/articles/ten-usability-heuristics/	{}	https://media.nngroup.com/media/articles/opengraph_images/Updated10HeuristicSocialCard-36.png	clmrpxxg7000444aeox804clc	clo5wfvzw0008mi088vj4gxdb	clo5wiqio0000kx092y0p0een	2023-10-26 10:23:08.582	2023-10-26 10:23:08.582
+clo76g5mj0000ml08np8v5c36	Échelle de Likert : exemples et mode d’emploi | SurveyMonkey	Découvrez l’échelle de Likert et comment l’utiliser dans votre prochain sondage. Les échelles de Likert sont un outil très fiable pour mesurer les opinions, les perceptions et les comportements.	  https://fr.surveymonkey.com/mp/likert-scale/	{}	https://prod.smassets.net/assets/website/2.237.0/images/surveymonkey-blog.png	clmrpxxg7000444aeox804clc	clo5wff9h0006mi080d0dw06k	clo5wuyl00000jy0822pr4r2i	2023-10-26 12:45:16.795	2023-10-26 12:45:16.795
+clo76gs1i0001ml083y0vion9	 Jean-François Nogier – Président-Fondateur d’Usabilis 	Jean-François Nogier est docteur-ingénieur en informatique, spécialiste de l’ergonomie digitale. C’est l’un des pionniers de l’UX Design en France..	https://www.usabilis.com/societe/usabilis-consultants-ux-ergonomie-digitale/jean-francois-nogier/	{}	https://www.usabilis.com/wp-content/uploads/2016/11/Jean-Francois-Nogier-e1479399719345.jpg	clmrpxxg7000444aeox804clc	clo5wd4cy0001mi08480c1lf2	clo5wjey40001kx09jci2aa8k	2023-10-26 12:45:45.846	2023-10-26 12:45:45.846
+clo6y3veu0001l108s7dr1546	😆🤸‍♂️	est-ce que ça marche ?\nOui, c'est déjà ça :)\n	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	{}	http://guillaumegronier.com/cv/resources/EchellesUtilisabiliteUX_v1.pdf	clmrpxxg7000444aeox804clc	clo5wfvzw0008mi088vj4gxdb	clo5wuyl00000jy0822pr4r2i	2023-10-26 08:51:46.759	2023-10-27 06:58:07.139
+cloe7bu4u0000l508mhna6b1w	mosalink | créez des liens collaboratifs	mosalink vous permet de créer des liens en collaboration avec vos collègues	https://mosalink.com/test/create-bookmark	{}	https://mosalink.com/test/create-bookmark	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmadfnvd0000ic08tvrgrx1k	2023-10-31 10:44:18.125	2023-10-31 10:44:18.125
+clo8a5fw10000mi08c5mwnqn3	Créez un nuage de mots clés en ligne	Générez rapidement et gratuitement votre nuage de mots clés. Collez votre texte pour créer un nuage de mots clés. Personnalisez ensuite votre nuage...	https://nuagedemots.co/	{}	https://nuagedemots.co/assets/logo-extrawide-4225b8cfac14431844c614d1ede90ff7eaedbaa74eccd0ce6caf357ef6710a01.png	clmrpxxg7000444aeox804clc	clo5wfvzw0008mi088vj4gxdb	clo67t8xm0000l309g9wj3mzl	2023-10-27 07:16:41.52	2023-10-27 07:16:41.52
+cloej1rtf0000l608ol605utq	https://www.oecdbetterlifeindex.org/fr/#/11111111111	The Living Life Index	https://www.oecdbetterlifeindex.org/fr/#/11111111111	{infovis,living,life,countries}	https://www.oecdbetterlifeindex.org/fr/#/11111111111	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clq9q44w00000lb08rqso4oa5	2023-10-31 16:12:23.954	2023-12-17 16:51:25.381
+cloffpkgm0000l9083o9nw42v	Welcome to Processing! / Processing.org	Processing is a flexible software sketchbook and a language for learning how to code. Since 2001, Processing has promoted software literacy within the visual arts and visual literacy within technology.	https://processing.org/	{graphic,creative}	data:image/svg+xml;charset=utf-8,%3Csvg height='150' width='150' xmlns='http://www.w3.org/2000/svg' version='1.1'%3E%3C/svg%3E	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsurggq0006mi08ro66reh2	2023-11-01 07:26:41.877	2023-11-01 07:26:41.877
+clofsq2950000jv08khjbqgyo	Usbek & Rica	Retrouve toute l'actualité du monde qui vient	https://usbeketrica.com/fr	{revue,societe,innovation,future}	https://usbeketrica.com/build/usbeketrica/images/metadatas/default_metadata_visual_facebook-4a82ddbcad.jpeg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmx8ow3o0000mk08b58sh0r0	2023-11-01 13:30:59.944	2023-11-01 13:30:59.944
+clph41n4y0000jn08wbgls27m	The Mother of All Demos, presented by Douglas Engelbart (1968) - YouTube	"The Mother of All Demos is a name given retrospectively to Douglas Engelbart's December 9, 1968, demonstration of experimental computer technologies that ar...	https://www.youtube.com/watch?v=yJDv-zdhzMY	{Engelbart,interaction,IHM,mouse,network}	https://i.ytimg.com/vi/yJDv-zdhzMY/hqdefault.jpg?sqp=-oaymwEmCOADEOgC8quKqQMa8AEB-AHkAoAC6AKKAgwIABABGFMgZShgMA8=&rs=AOn4CLAifLQf0tVt_rDs5Qn7aDARE6VQCA	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuqi3b0003mi08hb4wc74f	2023-11-27 16:15:24.513	2023-11-27 16:15:24.513
+clofsx0o80000l608sc6wevtl	Méthodes de design UX	30 méthodes fondamentales pour concevoir et évaluer les systèmes intercaatifs	https://catalogue.univ-rennes.fr/cgi-bin/koha/opac-detail.pl?biblionumber=415458&query_desc=kw%2Cwrdl%3A%20M%C3%A9thodes%20de%20design%20ux	{ux,design,tests,utilisateurs}	https://catalogue.univ-rennes.fr/cgi-bin/koha/opac-detail.pl?biblionumber=415458&query_desc=kw%2Cwrdl%3A%20M%C3%A9thodes%20de%20design%20ux	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clnvgvb9r0000l2086wx2vnm9	2023-11-01 13:36:24.487	2023-11-01 13:36:24.487
+clofsrig50000k108ux3uvn8o	Le design des objets du quotidien	L'ouvrage de référence... incontournable pour les designers et ergonomes	 https://catalogue.univ-rennes.fr/cgi-bin/koha/opac-detail.pl?biblionumber=666071	{nielsen,design,ergonomie}	 https://catalogue.univ-rennes.fr/cgi-bin/koha/opac-detail.pl?biblionumber=666071	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clnvgvb9r0000l2086wx2vnm9	2023-11-01 13:32:07.59	2023-11-01 14:59:03.672
+clo7fito90000mj08qhp86crp	Voix Of Fairlight - YouTube	Voici comment paramétrer un enregistrement de voix of, directement dans son projet Davinci Resolve avec Fairlight. L'exemple, montre une Presonus, mais ca fo...	https://youtu.be/TCQHPUZDHwY?si=b3CA53aUq4Ej_pNN	{sound,Fairlight,Presonus,F6Zoom,MMI}	https://i.ytimg.com/vi/TCQHPUZDHwY/maxresdefault.jpg?sqp=-oaymwEmCIAKENAF8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGGUgWShBMA8=&rs=AOn4CLDOgOjW-ilTVRwa0XZuemlXeYi-bw	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuplbr0000mi08bt0yv1a1	2023-10-26 16:59:17.815	2023-11-27 19:59:04.045
+clpwg566q0000l908j5z1gclj	Gartner Magic Quadrant & Critical Capabilities | Gartner	Gartner Magic Quadrant research methodology provides a graphical competitive positioning of four types of technology providers in fast-growing markets: Leaders, Visionaries, Niche Players and Challengers. 	https://www.gartner.com/en/research/magic-quadrant	{Veille,concurrence}	https://emt.gartnerweb.com/ngw/commonassets/images/build-graphics/gartner-logos/gartner.svg	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmd6cl6j0001l9080hl5yqii	2023-12-08 09:50:37.201	2023-12-08 09:50:37.201
+cln62s70z0000l308s8nxu26o	Framasoft - Charte graphique	Framasoft, c’est une association d’éducation populaire, un groupe d’ami·es convaincu·es qu’un monde numérique émancipateur est possible, persuadé·es qu’il adviendra grâce à des actions concrètes sur le terrain et en ligne avec vous et pour vous !	https://framasoft.org/fr/graphics/#	{charte}	https://framasoft.org/img/opengraph/graphics.jpg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsupu1k0001mi089s9xabry	2023-09-30 13:35:11.504	2023-12-17 16:48:15.401
+clox9bmdd0000l708jo95ltwl	EdTech France – L'association des entreprises de la filière EdTech	L'association EdTech France fédère les entreprises françaises qui ont décidé de rendre la technologie et l’innovation utiles à l’éducation, à l’enseignement supérieur et à la formation tout au long de la vie.	https://edtechfrance.fr/	{Education,Tech,It}	https://edtechfrance.fr/wp-content/uploads/2019/06/logo-1.png	clldpr0xs00009gd8mn4bb7hv	clldrj90t0002ml08rnvabo89	clmt70npf0000l1088havq6bv	2023-11-13 18:47:44.64	2023-11-13 18:47:44.64
+clopgenlm0000l308atmdbyi4	PNAS	The global human day	https://www.pnas.org/doi/10.1073/pnas.2219564120	{infovis,graphic,data}	https://www.pnas.org/doi/10.1073/pnas.2219564120	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmx8ow3o0000mk08b58sh0r0	2023-11-08 07:43:54.105	2023-11-20 09:00:46.609
+clqayu3tv0001l908cd6scaac	Wirify – The web as wireframes	Wirify is a bookmarklet that lets you turn any web page into a wireframe in one click. Wirify is free, easy and fun to use. Wirify Pro lets you export and edit your wireframes.	https://www.wirify.com	{}	https://www.wirify.com/wp/wp-content/themes/960bc_wirify/images/wirify/wirify-logo.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clnaat2fm0000mo08ea6eph1r	2023-12-18 13:42:40.097	2023-12-18 13:42:40.097
+clqay816v0000jt08bma19l2n	Couleurs	Schémas couleurs, combinaisons de couleurs, les dégradés et les conversions d'espace colorimétrique.	https://encycolorpedia.fr/	{colors}	/70ed3a-logo.svg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuqote0004mi0889qfuy7u	2023-12-18 13:25:30.245	2023-12-18 13:34:44.869
+clopgnef10000ib086f9gkqzb	\n      Magical Music Theory Tools to Learn Music Online for Free\n    	A collection of interactive online music theory tools and piano references for notes, keys, chords and scales. A fun way to learn and retain music concepts.	https://muted.io/	{sound,music,content}	/images/extras/chordwatch-2.webp	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsurpea0007mi08qphbs4ot	2023-11-08 07:50:42.109	2023-11-27 09:27:43.247
+clqayef830000l908m2f27z8l	WCAG - Contrast Checker	Check the contrast of your color design for accessibility base on Web Content Accessibility Guideline (WCAG)	https://contrastchecker.com/	{accessibility,colors}	https://contrastchecker.com/wp-content/uploads/2019/03/acart-logo-380.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuqote0004mi0889qfuy7u	2023-12-18 13:30:28.368	2023-12-18 13:35:03.157
+clqciupms0000jq08b5gl3e3o	Our World in Data	Research and data to make progress against the world’s largest problems	https://ourworldindata.org/	{data}	https://ourworldindata.org/default-thumbnail.jpg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clq9q44w00000lb08rqso4oa5	2023-12-19 15:50:46.85	2023-12-19 15:50:46.85
+clr5o26xi0000l1074mtq16b4	Les bio-processeurs de la deeptech suisse Finalspark promettent une informatique un million de fois plus sobre 	\n\tEn Suisse, la deeptech Finalspark met au point des bio-processeurs, constitués de neurones vivants, pour traiter de l’information. Ces IA...-Numérique	https://www.usinenouvelle.com/article/les-bio-processeurs-de-la-deeptech-suisse-finalspark-promettent-une-informatique-un-million-de-fois-plus-sobre.N2205852	{neurones,tecnologie,computer}	https://www.usinenouvelle.com/mediatheque/9/0/9/001504909_896x598_c.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuplbr0000mi08bt0yv1a1	2024-01-09 01:21:52.962	2024-01-09 01:22:49.509
+clr6248hy0000kx07c0z9agzv	Ui Design 🌈 5 secrets pour choisir ses couleurs - YouTube	Je vous partage mes 5 astuces, conseils, secrets, appelez ça comme vous le souhaitez sur le choix des couleurs en UI et Webdesign. 💬 Laissez en commentaire ...	https://youtu.be/5Rd9AEl4RHw?si=uZrV5TlHyWtfdSZG	{Couleurs,prototype,figma,video,Youtube}	https://i.ytimg.com/vi/5Rd9AEl4RHw/maxresdefault.jpg	clmrpxxg7000444aeox804clc	clmrpxxvh000544aexo3ihmtc	clo5wie16000dmi08hrrdii5j	2024-01-09 07:55:22.93	2024-01-09 07:55:22.93
+clqoytjda0000lb08j7o9mnjj	Periodic Table of Typefaces	Cam Wilde from Squidspot created this table	https://www.flickr.com/photos/kimbeckmann/3405535851/	{fonts,typefaces}	https://live.staticflickr.com/3554/3405535851_e9edca15bb_b.jpg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuqote0004mi0889qfuy7u	2023-12-28 08:51:00.044	2024-01-19 14:19:30.547
+clqp0d73j0000js082q9j55ci	Framalibre	Logiciels et services libres	https://framalibre.org/	{OpenSource,libre,gratuit,logiciels}	/images/gnu-tux.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsurpea0007mi08qphbs4ot	2023-12-28 09:34:16.877	2023-12-28 09:35:51.697
+clqp0udub0000l508vf98vh6h	BUT - Métiers du Multimédia et de l’Internet : Stratégie de communication numérique et design d’expérience - France Compétences	RNCP - 35500	https://www.francecompetences.fr/recherche/rncp/35500/	{RNCP,MMI,BUT}	https://www.francecompetences.fr/app/themes/france-competences/dist/images/logo-rf_a9735b19.svg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmx8ow3o0000mk08b58sh0r0	2023-12-28 09:47:38.771	2023-12-28 09:47:38.771
+clr27vqwj0000ky08t9k96hrx	Alara | Boost your presence on LinkedIn	Alara lets you manage your content strategy on LinkedIn quickly and easily to achieve your goals and focus on your business.	https://www.alarapp.com/	{}	https://www.alarapp.com/icon.png	clldpr0xs00009gd8mn4bb7hv	clldpr18w00019gd8zo6jiizb	clldrkto00000l70800w723yh	2024-01-06 15:25:39.871	2024-01-06 15:25:39.871
+clr4olvfx0003i60868t04d2b	UI & UX Design Tips by Jim Raptis.	Learn UI & UX Design with practical byte-sized tips and in-depth articles from Jim Raptis.	https://www.uidesign.tips/	{}	https://www.uidesign.tips/static/images/learn-ui-design-og-image.jpg	clmrpxxg7000444aeox804clc	clo5wd4cy0001mi08480c1lf2	clo5wjey40001kx09jci2aa8k	2024-01-08 08:49:25.018	2024-01-08 08:49:25.018
+clr4ou6vk0000jw08lhk8mav5	AttrakDiff : une évaluation quantitative de l’UX – Carine Lallemand	Le questionnaire AttrakDiff, élaboré par Hassenzahl et ses collègues en 2003, est un outil de référence pour les chercheurs en UX. Il permet d'évaluer les qualités hédoniques et pragmatiques des systèmes interactifs. Jusqu'en 2014, il n'avait jamais été traduit et validé en version française. Afin de pouvoir étudier l'UX sur des échantillons francophones dans le cadre…	https://uxmind.eu/2014/06/23/attrakdiff-evaluation-quantitative-ux/	{}	https://carinelallemand.files.wordpress.com/2014/06/attrakdiff-ux.jpg	clmrpxxg7000444aeox804clc	clo5wcokk0000mi087iu1iub4	clo67t8xm0000l309g9wj3mzl	2024-01-08 08:55:53.169	2024-01-08 08:55:53.169
+clr4ptwxc0001l508tv25l4be	https://www.oxatis.com/wp-content/uploads/2021/03/Charte-Editoriale-NewOxatis.pdf	La description du bookmark	https://www.oxatis.com/wp-content/uploads/2021/03/Charte-Editoriale-NewOxatis.pdf	{}	https://www.oxatis.com/wp-content/uploads/2021/03/Charte-Editoriale-NewOxatis.pdf	clmrpxxg7000444aeox804clc	clo5wfvzw0008mi088vj4gxdb	clo5wiqio0000kx092y0p0een	2024-01-08 09:23:39.888	2024-01-08 09:23:39.888
+clr4q9ui10000ld08zh2ns9pg	Voice and Tone | Mailchimp Content Style Guide	La description du bookmark	https://styleguide.mailchimp.com/voice-and-tone/	{}	https://mailchimp.com/static/images/share.png	clmrpxxg7000444aeox804clc	clo5wd4cy0001mi08480c1lf2	clo5wiqio0000kx092y0p0een	2024-01-08 09:36:03.242	2024-01-08 09:36:03.242
+clr6fpum00000l508nha6jjck	Marc Teyssier | Skin-On Interfaces	Marc Teyssier	https://marcteyssier.com/projects/skin-on/	{anthropomorphiques,interfaces,skin,eye}	https://marcteyssier.com/content/2-projects/2-skin-on/protos4.jpg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuqi3b0003mi08hb4wc74f	2024-01-09 14:16:06.371	2024-01-09 14:16:06.371
+clr8xnazt0001l308vkbu98ib	RGESN : la référence pour évaluer vos services numériques	En 2024, la loi REEN (article 25) prévoit la création d'un Référentiel Général d'Éco-conception de Services Numériques. Le RGESN est-il obligatoire ?	https://blog.ferpection.com/fr/referentiel-general-ecoconception-services-numeriques-rgesn?utm_source=Nos+chers+clients&utm_campaign=0171cdf6ed-EMAIL_CAMPAIGN_2024_01_11_07_23&utm_medium=email&utm_term=0_c2bea8ebd3-0171cdf6ed-157691848	{Article,referentiel}	https://blog.ferpection.com/photos/RGESN-reference-evaluer-services-numeriques_large.png	clmrpxxg7000444aeox804clc	clmrpxxvh000544aexo3ihmtc	clr8xm4te0000l308m6om40kr	2024-01-11 08:13:33.077	2024-01-11 08:13:33.077
+clrdfeclp0000l208iena5qok	Oreiller anti-ronflements, télévision transparente, voiture volante… Les innovations technologiques les plus surprenantes du CES 2024 - midilibre.fr	Le CES de Las Vegas 2024, rendez-vous annuel incontournable pour découvrir toutes les innovations technologiques du moment, s'est achevé ce vendredi 12 janvier. Retour sur les...	https://www.midilibre.fr/2024/01/14/oreiller-anti-ronflements-television-transparente-voiture-volante-les-innovations-technologiques-les-plus-surprenantes-du-ces-2024-11694438.php	{CES,vegas}	https://images.midilibre.fr/api/v1/images/view/65a2f3822b4f55341a45b7cb/large/image.jpg?v=2	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmx8ow3o0000mk08b58sh0r0	2024-01-14 11:41:33.049	2024-01-14 11:41:33.049
+clrbd5i180000jo09wyettt0z	Ce petit boîtier avec un lapin s’est arraché en l’espace de 24 h au CES de Las Vegas !	Le Rabbit R1 est un petit boîtier boosté à l’intelligence artificielle, qui permet d’interagir avec les applications à la voix, comme l’AI Pin. Malgré une utilité qui reste encore à démontrer, la...	https://www.futura-sciences.com/tech/actualites/ces-2024-las-vegas-ce-petit-boitier-lapin-arrache-espace-24-h-ces-las-vegas-110679/	{rabbit,assistant,Ai}	https://cdn.futura-sciences.com/buildsv6/images/largeoriginal/9/6/3/963c0f0a0d_50210847_rabbit-r1.jpg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuplbr0000mi08bt0yv1a1	2024-01-13 01:03:08.599	2024-01-13 01:19:01.854
+clreooktv0000l5081kgrpe4k	Hello world — Wikipédia	La description du bookmark	https://fr.wikipedia.org/wiki/Hello_world	{hello,world,wikipedia}	https://upload.wikimedia.org/wikipedia/commons/4/48/Piet_Program_Hello_World.gif	clmrpxxg7000444aeox804clc	clreo46ni0000jz08bp4rwp2j	clo5wjey40001kx09jci2aa8k	2024-01-15 08:49:12.99	2024-01-15 08:49:12.99
+clrjhxym40000ju08ha3zwazz	 Usabilis - Conseil & formation UX Design, ergonomie, Design Thinking 	☎ 01 57 63 86 58. Usabilis est une agence conseil en UX et ergonomie. Nous vous accompagnons dans la conception de vos services et produits digitaux.	https://www.usabilis.com/	{formations,cours,fondement}	https://www.usabilis.com/wp-content/uploads/2019/01/Usabilis_Home_1200x628.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuqsqh0005mi08p27k5tns	2024-01-18 17:39:24.329	2024-01-18 17:39:24.329
+clrk8t9u60000kv08idrgxnb1	Félix Tréguer - Une contre-histoire de l'internet du XVe siècle à nos jours - YouTube	L'histoire d'Internet est connue et largement documentée, de la création du réseau par l'armée américaine jusqu'à Tiktok en passant par le minitel et les mod...	https://youtube.com/watch?v=agblJ_EZMWY&si=uw3Dy2pdbNZNv0cv	{internet,pouvoir,communication,medias}	https://i.ytimg.com/vi/agblJ_EZMWY/maxresdefault.jpg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmx8ow3o0000mk08b58sh0r0	2024-01-19 06:11:35.227	2024-01-19 06:11:35.227
+clrekej6b0000la0841eytwmu	Multifunctional Smart Glass : cette technologie transforme toutes les surfaces vitrées en écran holographique - NeozOne	Le Multifunctional Smart Glass de Zeiss transforme la vitre d’une fenêtre ou un pare-brise en écran utilisant la réalité augmentée et la technologie holographique pour afficher un HUD, par exemple. Grâce à la Holocam, il peut également transformer toute surface vitrée en caméra.	https://www.neozone.org/innovation/multifunctional-smart-glass-cette-technologie-transforme-toutes-les-surfaces-vitrees-en-ecran-holographique/	{hologramme,glass,vitres,affichage,screen}	https://www.neozone.org/blog/wp-content/uploads/2024/01/invention-innovation-zeiss-multifunctional-smart-glas-automotive-holographique-004-1.jpg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuplbr0000mi08bt0yv1a1	2024-01-15 06:49:25.824	2024-01-19 07:59:44.945
+clqp0892m0000jq0808h14szp	Liste de logiciels libres — Wikipédia	Logiciels libres / Open Source	https://fr.wikipedia.org/wiki/Liste_de_logiciels_libres	{logiciels,libre,gratuit,Opensource}	/static/images/icons/wikipedia.png	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsurpea0007mi08qphbs4ot	2023-12-28 09:30:26.153	2024-01-19 13:58:15.433
+clrns5n0j0000li089tmr4lw8	www.bpifrance.fr	La description du bookmark	www.bpifrance.fr	{}	www.bpifrance.fr	clmhezyif000297ae5e5rnuu9	clrji0cye0001l2072k11zq4f	clmsurwih0008mi08v6qdnysw	2024-01-21 17:36:23.408	2024-01-21 17:36:23.408
+clrq32j6c0002i508brhc1pan	Accueil - Numérique écoresponsable	MiNumEco, la mission interministérielle numérique écoresponsable pilotée par la DINUM et le Ministère de la Transition écologique pour réduire les impacts environnementaux du numérique	https://ecoresponsable.numerique.gouv.fr	{interministeriel,numeriqueresponsable}	/img/logo.png	clmrpxxg7000444aeox804clc	clmrpxxvh000544aexo3ihmtc	clr8xm4te0000l308m6om40kr	2024-01-23 08:17:26.593	2024-01-23 08:17:26.593
+clrr8eshc0000jr084dt4otky	Disney a trouvé la solution au plus gros problème de la réalité virtuelle	Mickey regarde résolument vers l'avenir et présente sa nouvelle innovation, un tapis omnidirectionnel pour jouer en virtuel comme si l'on était dans la réalité et sans sacrifier quelques vases...	https://www.journaldugeek.com/2024/01/23/disney-a-trouve-la-solution-au-plus-gros-probleme-de-la-realite-virtuelle/	{walk,vr,move}	https://www.journaldugeek.com/app/uploads/2024/01/tapis-disney-realite-virtuelle-probleme.jpg	clmhezyif000297ae5e5rnuu9	clmhezyxt000397aeagzgpy1w	clmsuplbr0000mi08bt0yv1a1	2024-01-24 03:34:42.782	2024-01-24 03:34:42.782
+\.
+
+
+--
+-- TOC entry 2624 (class 0 OID 24625)
+-- Dependencies: 219
+-- Data for Name: Category; Type: TABLE DATA; Schema: public; Owner: default
+--
+
+COPY public."Category" (id, name, url, "isPublish", "domainId", "creationDate", "lastUpdateDate") FROM stdin;
+clldrioth0000ml08d9esqdtg	UX design	UXdesign	t	clldpr0xs00009gd8mn4bb7hv	2023-08-16 13:22:36.965	2023-08-16 13:22:36.965
+clldrix050001ml08kmtz6zdn	Développement Web	DeveloppementWeb	t	clldpr0xs00009gd8mn4bb7hv	2023-08-16 13:22:47.572	2023-08-16 13:22:47.572
+clldrkto00000l70800w723yh	Outils	Outils	t	clldpr0xs00009gd8mn4bb7hv	2023-08-16 13:24:16.561	2023-08-16 13:24:16.561
+clmd6cbn00000l908prmial2y	Graphic design	Graphicdesign	t	clldpr0xs00009gd8mn4bb7hv	2023-09-10 08:09:30.348	2023-09-10 08:09:30.348
+clmd6cl6j0001l9080hl5yqii	Marketing	Marketing	t	clldpr0xs00009gd8mn4bb7hv	2023-09-10 08:09:42.713	2023-09-10 08:09:42.713
+clmd6dfvg0003l90896uod4mr	Ui design	Uidesign	t	clldpr0xs00009gd8mn4bb7hv	2023-09-10 08:10:22.49	2023-09-10 08:10:22.49
+clo67t8xm0000l309g9wj3mzl	Outils	Outils	t	clmrpxxg7000444aeox804clc	2023-10-25 20:35:41.05	2023-10-25 20:35:41.05
+clmd6gjmh0001jq08pfjbyolt	Interaction design	Interactiondesign	t	clldpr0xs00009gd8mn4bb7hv	2023-09-10 08:12:47.322	2023-09-10 08:13:15.219
+clmd6cwb10002l908wp5ze5jh	Brand design	Branddesign	t	clldpr0xs00009gd8mn4bb7hv	2023-09-10 08:09:57.134	2023-09-10 08:13:26.28
+clmadfnvd0000ic08tvrgrx1k	Content design	Contentdesign	t	clldpr0xs00009gd8mn4bb7hv	2023-09-08 09:04:44.953	2023-09-10 08:13:41.685
+clmsuplbr0000mi08bt0yv1a1	Hardware	Hardware	t	clmhezyif000297ae5e5rnuu9	2023-09-21 07:28:12.855	2023-09-21 07:28:12.855
+clmsupu1k0001mi089s9xabry	Content design	Contentdesign	t	clmhezyif000297ae5e5rnuu9	2023-09-21 07:28:24.15	2023-09-21 07:28:24.15
+clmsuq5970002mi08026t8n4q	Brand design	Branddesign	t	clmhezyif000297ae5e5rnuu9	2023-09-21 07:28:38.683	2023-09-21 07:28:38.683
+clmsuqi3b0003mi08hb4wc74f	Interaction design	Interactiondesign	t	clmhezyif000297ae5e5rnuu9	2023-09-21 07:28:55.318	2023-09-21 07:28:55.318
+clmsuqote0004mi0889qfuy7u	Graphic design	Graphicdesign	t	clmhezyif000297ae5e5rnuu9	2023-09-21 07:29:04.034	2023-09-21 07:29:04.034
+clmsuqsqh0005mi08p27k5tns	Ux design	Uxdesign	t	clmhezyif000297ae5e5rnuu9	2023-09-21 07:29:09.113	2023-09-21 07:29:09.113
+clmsurggq0006mi08ro66reh2	Web Dev	WebDev	t	clmhezyif000297ae5e5rnuu9	2023-09-21 07:29:39.865	2023-09-21 07:29:39.865
+clmsurpea0007mi08qphbs4ot	Outils	Outils	t	clmhezyif000297ae5e5rnuu9	2023-09-21 07:29:51.443	2023-09-21 07:29:51.443
+clmsurwih0008mi08v6qdnysw	Marketing	Marketing	t	clmhezyif000297ae5e5rnuu9	2023-09-21 07:30:00.664	2023-09-21 07:30:00.664
+clq9q44w00000lb08rqso4oa5	Information Design	InformationDesign	t	clmhezyif000297ae5e5rnuu9	2023-12-17 16:50:45.308	2023-12-17 16:50:45.308
+clmun159e0001mg08s2sll5pp	Video	Video	t	clmhezyif000297ae5e5rnuu9	2023-09-22 13:28:47.33	2023-09-22 13:28:47.33
+clr8xm4te0000l308m6om40kr	Éco-conception	Ecoconception	t	clmrpxxg7000444aeox804clc	2024-01-11 08:12:38.411	2024-01-11 08:12:38.411
+clr9huiky0001lc08z4ns9vb8	Dev	Dev	t	clmrpxxg7000444aeox804clc	2024-01-11 17:39:01.823	2024-01-11 17:39:01.823
+clmt70npf0000l1088havq6bv	Création d'entreprises	Creationdentreprises	t	clldpr0xs00009gd8mn4bb7hv	2023-09-21 13:12:44.547	2023-09-29 07:57:56.03
+clmun0x990000mg08izdaayzq	Animation	Animation	t	clmhezyif000297ae5e5rnuu9	2023-09-22 13:28:36.957	2023-10-01 15:05:29.204
+clnaat2fm0000mo08ea6eph1r	UI design	UIdesign	t	clmhezyif000297ae5e5rnuu9	2023-10-03 12:30:53.84	2023-10-03 12:32:31.53
+clnd7p07n0000l608t9ghres0	Planification	Planification	t	clmhezyif000297ae5e5rnuu9	2023-10-05 13:27:04.018	2023-10-05 13:27:04.018
+clmx8ow3o0000mk08b58sh0r0	Humanités	Humanites	t	clmhezyif000297ae5e5rnuu9	2023-09-24 09:10:39.493	2023-10-17 15:49:29.645
+clnvgvb9r0000l2086wx2vnm9	Bibliothèque Universitaire	BibliothequeUniversitaire	t	clmhezyif000297ae5e5rnuu9	2023-10-18 08:03:45.997	2023-10-18 08:03:45.997
+clo5wie16000dmi08hrrdii5j	UI	UI	t	clmrpxxg7000444aeox804clc	2023-10-25 15:19:18.667	2023-10-25 15:19:18.667
+clo5wjey40001kx09jci2aa8k	UX design	UXdesign	t	clmrpxxg7000444aeox804clc	2023-10-25 15:20:06.509	2023-10-25 15:20:06.509
+clo5wiqio0000kx092y0p0een	UX writing	UXwriting	t	clmrpxxg7000444aeox804clc	2023-10-25 15:19:34.774	2023-10-25 15:20:40.608
+clo5wuyl00000jy0822pr4r2i	Utilisabilité	Utilisabilite	t	clmrpxxg7000444aeox804clc	2023-10-25 15:29:05.172	2023-10-25 15:31:18.794
+\.
+
+
+--
+-- TOC entry 2622 (class 0 OID 24604)
+-- Dependencies: 217
+-- Data for Name: Domain; Type: TABLE DATA; Schema: public; Owner: default
+--
+
+COPY public."Domain" (id, name, url, "isPublish", "maximumCategories", "creationDate", "lastUpdateDate") FROM stdin;
+clldpr0xs00009gd8mn4bb7hv	test	test	t	10	2023-08-16 12:33:06.688	2023-08-16 12:33:06.688
+clmhezyif000297ae5e5rnuu9	IUT-Lannion-MMI	IUT-Lannion-MMI	t	10	2023-09-13 07:22:54.711	2023-09-13 07:22:54.711
+clmrpxxg7000444aeox804clc	UCO DI	UCO-DI	t	10	2023-09-20 12:26:57.559	2023-09-20 12:26:57.559
+\.
+
+
+--
+-- TOC entry 2626 (class 0 OID 24642)
+-- Dependencies: 221
+-- Data for Name: Folder; Type: TABLE DATA; Schema: public; Owner: default
+--
+
+COPY public."Folder" (id, name, url, "isPublish", "userCreatorId", "publicUrl") FROM stdin;
+clrep7qrj0001l608nlwhbz04	UX trégorrois	uxtregorrois-666	f	clmrpxxvh000544aexo3ihmtc	\N
+clmadxr0r0000l8085lsocoxc	bonjour	bonjour	f	clldrj90t0002ml08rnvabo89	\N
+clrewxzh00000l8080i9gz2o2	Veille_MMi	veillemmi	t	clmhezyxt000397aeagzgpy1w	\N
+cllf8559z0000lb088ss5bhly	essai	essai	f	clldrjw1n0002lb08bdzng9ga	\N
+clmeko7us0000m6084u7y5efs	bidibulle	bidibulle	t	clldrjw1n0002lb08bdzng9ga	\N
+clmf3ug3k0000lb085wfpieai	equipe-saas	equipesaas	t	clldpr18w00019gd8zo6jiizb	\N
+clleuvpbn0000l5085psb6iz4	saas	saas	f	clldrj90t0002ml08rnvabo89	\N
+clmt7ycn50000mp08nr0mumo7	Test	Test	f	clmt178mu0000mt08y3ru283t	\N
+clo5vmigw0001k408yb2zrqxq	pointy	pointy	f	clo3aznzg0000me0852abnf7w	\N
+clo8dm2yb0000js09gk1uia6h	Happy Asso	HappyAsso	f	clo5wd4cy0001mi08480c1lf2	\N
+clo8dohwl0000la08ib4crne1	gwend event	gwendevent	f	clo5whasd000bmi08u9cm7mib	\N
+clowool2h0000l808s97ds4zv	alara	alara	f	clldpr18w00019gd8zo6jiizb	\N
+clrep7heo0000jp08482my98d	gregoire	gregoire	f	clreo46ni0000jz08bp4rwp2j	\N
+clrep7m4v0002jz089fmm9qbo	UX trégorrois	uxtregorrois	f	clmrpxxvh000544aexo3ihmtc	\N
+clrep7pkv0001jp084i0ekzwm	UX trégorrois	uxtregorrois-653	f	clmrpxxvh000544aexo3ihmtc	\N
+\.
+
+
+--
+-- TOC entry 2620 (class 0 OID 24592)
+-- Dependencies: 215
+-- Data for Name: Session; Type: TABLE DATA; Schema: public; Owner: default
+--
+
+COPY public."Session" (id, "sessionToken", "userId", expires) FROM stdin;
+clldrulim0008l708bjsvffw5	a0b92562-adc6-46c5-803f-baf9f19c8cf3	clldpr18w00019gd8zo6jiizb	2023-09-15 13:31:52.557
+clmd6uyt80001mg08auajp6uj	3e76b9f7-b0d4-4069-a0da-7e1b57f19324	clldrjw1n0002lb08bdzng9ga	2023-10-10 08:24:00.185
+clo88z07s0001mn087phv3df4	58cce0ef-c190-4b40-9afc-0933b6491f76	clo5whasd000bmi08u9cm7mib	2023-12-15 08:18:45.525
+clo6w61mx0001mj089b7i2xox	9f1753ba-6556-4cce-931b-b59299b3934e	clo5wg26d0009mi08ib4l4k0v	2023-11-25 07:57:28.901
+clo6w6t200003l5084xhrr0gu	2d12b0a4-6713-4824-b9d3-26627d9d5334	clo5wfos70007mi08v7lb9w8g	2023-11-25 07:58:04.439
+clletbhs40001lc08fl8dcksf	00e17aab-049f-4297-a24b-42bc6939f0ad	clldrj90t0002ml08rnvabo89	2023-10-30 09:54:14.098
+clo6w73h50003mj08m44kliyu	b045ff86-6ab8-4640-bd47-28aa793ddd29	clo5wgudk000ami085ycihh8j	2023-11-25 07:58:17.944
+clo6w8cub0001l6087u260cdh	d3da035e-15fb-40aa-97bb-e4b7a58dbc78	clo5wf4dp0005mi08bmwuoxcu	2023-11-25 07:59:16.734
+cllrrcu1z0001jr080s6fhaff	ac362c37-5eca-4cd6-8b47-719cd71a83eb	clldrj90t0002ml08rnvabo89	2023-09-29 16:43:37.62
+clo6w8lpt0005l508g3qxd7j1	0fedabee-9b96-432d-b880-c640fb7892f1	clo5wcokk0000mi087iu1iub4	2023-11-25 07:59:28.24
+clletafr90001l5087ifl02vy	f25d1b6d-73b2-4d6f-a689-08c6f5e75d0e	clldrjw1n0002lb08bdzng9ga	2023-09-30 19:46:40.938
+clo6wa8xa0006mj08m3xnl25h	ee43f296-e691-4643-bc96-230871d192d3	clo5wff9h0006mi080d0dw06k	2023-11-25 08:00:44.972
+clo6wd1uc0001md08i6t0upfl	a7d8f49a-2411-4b2b-8d1a-0fb0ae9f31e5	clo5whasd000bmi08u9cm7mib	2023-11-25 08:02:55.762
+clm4p2zsz0001kx083me7pu3r	ac898bfb-9d9b-48c1-a822-a33dd5207903	clldpr18w00019gd8zo6jiizb	2023-10-04 09:44:12.224
+clo6we6950008l60857o9l2aw	5d35e3b1-bc23-46ec-8f9c-ca6110839a6b	clo5wfvzw0008mi088vj4gxdb	2023-11-25 08:03:48.135
+clmvvzkh40001mf08f82j43wr	8d8ee8e5-6d7b-4f12-b3ef-67cb5958eb9b	clmhezyxt000397aeagzgpy1w	2023-10-23 10:27:16.453
+clmt6kbku0001i608a7jr87p0	fcb118a2-7842-4350-8d0d-6b44774466be	clmt178mu0000mt08y3ru283t	2023-11-15 09:15:17.996
+clo6wejhq000cmj08wfl7fl6z	e3ca1b52-789a-456e-a98b-a1cc1dd1a443	clo5whasd000bmi08u9cm7mib	2023-11-25 08:04:05.293
+clm0kd47d0001ku08n11vs7nl	d2e753e4-6a2c-4749-83cf-213d6643e29d	clldrj90t0002ml08rnvabo89	2023-10-06 06:57:05.857
+clm4p7h360001l608cahnrvze	7d6308ef-d0d2-48ad-8a41-13d34770b6ea	clldpr18w00019gd8zo6jiizb	2023-10-06 14:06:04.19
+clm8v5qp60001l308mt13ryws	e8f7592f-ddad-4e85-b8bd-0737d56896cf	clm7vl39d0000lc08n3hi8m7t	2023-10-07 07:45:22.791
+clo6wremh0001md08zwx06yv4	2a16302b-c60f-4aa4-b3b7-b07667b44b31	clo5wf4dp0005mi08bmwuoxcu	2023-11-25 08:14:05.512
+cllf59gv30001lh08hxof8wv9	2b57e13c-7a13-48db-bca4-0fedf7925275	clldrjw1n0002lb08bdzng9ga	2023-10-07 08:50:51.538
+clo74knca0001l2081sn0pmqc	900ee463-9468-487d-b40f-029eff155465	clo5wfvzw0008mi088vj4gxdb	2023-11-25 11:52:47.144
+clo74lde70002l108508vg0se	c95dbaf3-0a40-40d7-ab3e-4ca383e59306	clo5wfos70007mi08v7lb9w8g	2023-11-25 11:53:20.909
+clo74m31h0001l108mvbu3h3w	c8c5c794-7484-4b83-a4ec-3a2fcb069054	clo5wcokk0000mi087iu1iub4	2023-11-25 11:53:54.146
+clo74mflh0003l108oy8edzpk	bc7b9e35-52fc-4549-b876-280dc6dc3274	clo5wf4dp0005mi08bmwuoxcu	2023-11-25 11:54:10.42
+clmyf5jn00001mg0875w9ule7	0318bec1-6a55-4a0d-b53b-ba9e59c2dd4b	clmhezyxt000397aeagzgpy1w	2023-10-25 04:59:20.36
+clo74mz9v0004l108ka8fyj8o	e82c1ac7-3f92-4a11-b0bf-1aea56027e12	clo5whasd000bmi08u9cm7mib	2023-11-25 11:54:35.923
+clmbqrpk30001l5081934v9z6	ed4a17da-f8b0-46f1-b6d2-8c75b26e6d9c	clldrj90t0002ml08rnvabo89	2023-10-09 08:05:48.192
+clo74odph0001l3082228d5il	e343efa2-983c-4ec3-a93a-0541b485262c	clo5wff9h0006mi080d0dw06k	2023-11-25 11:55:41.281
+clm7u6wnv0001l508ny8ba22r	3a2fe675-cf99-4dc7-bc36-c5fc07d47b1b	clldrjw1n0002lb08bdzng9ga	2023-10-09 08:29:57.856
+clo74oei90003l3083boxahkh	926ddca3-e3f4-44dc-85c1-b3289491bf77	clo5wg26d0009mi08ib4l4k0v	2023-11-25 11:55:42.319
+clo74s74n0005l308axxaz01l	f2dba34c-118e-4645-b773-2c2783b330bb	clo5wgudk000ami085ycihh8j	2023-11-25 11:58:39.382
+clpgoax740001jt08fp2trsny	d7699bf6-af56-4aa7-8f9c-7519020cf606	clldpr18w00019gd8zo6jiizb	2023-12-27 08:54:43.598
+clmbrvj0t0001jq08hkbroy6m	9c5ca6a0-6b7e-448a-9372-ffb32d092e1a	clldrjw1n0002lb08bdzng9ga	2023-11-04 13:09:21.946
+clpgrc8bt0001l00807o5vn99	79063655-9db1-4e97-90ba-d023c2458792	clmhezyxt000397aeagzgpy1w	2024-01-02 20:16:34.294
+clor1gjw50001jt08gorsykd4	1d1ec52d-9c63-40f4-a193-6e3ac1eb1564	clmhezyxt000397aeagzgpy1w	2023-12-31 08:57:54.682
+clms0bjub0001me08tbr89dnw	1f2e2a2b-0bb1-4aaa-9aa8-57b021736404	clldpr18w00019gd8zo6jiizb	2023-12-13 09:09:36.841
+clq51wxen0001k208cecj4gjp	cbd6bd58-d178-4583-919b-5e19d996feab	clmhezyxt000397aeagzgpy1w	2024-01-13 10:22:13.531
+clo89aezn0003mn08lw6te1e6	a3d40bf0-6716-48ca-855f-6f5c68292a49	clo5wfvzw0008mi088vj4gxdb	2023-11-26 06:52:34.018
+clojso6k00001ld08ksv2e42h	65888670-1595-46bc-9bfa-4fa566562ec2	clmrpxxvh000544aexo3ihmtc	2023-12-27 09:24:15.852
+clo6w9jc00003l608tix3jpu6	b17f6faa-b1ad-413c-8414-4f7989c92bfa	clo5wd4cy0001mi08480c1lf2	2023-11-26 08:53:19.278
+clpgoywr20001jr08wd40wcli	8cf26dfe-0601-4d35-a648-d9f604502656	clmhezyxt000397aeagzgpy1w	2024-01-03 12:37:24.462
+clo5wb73a0001ie082g7jquxu	8cfea50c-a0c8-4648-84b7-414c34edd62d	clmrpxxvh000544aexo3ihmtc	2023-12-02 17:17:40.731
+clpgrk1jm0003l008zss2mzql	1e421389-9ea0-414f-bf1d-71c528ad02ed	clmhezyxt000397aeagzgpy1w	2024-01-01 21:26:51.438
+clq526v1u0005k108xjja8xw2	890c21c9-a308-4cbc-a5db-3eb488c56bf5	clmhezyxt000397aeagzgpy1w	2024-02-23 03:34:04.139
+clopoeo7n0001jt08fksfritm	6d5b511c-9cf0-45d6-b9c6-cce471ba12ba	clldpr18w00019gd8zo6jiizb	2023-12-27 08:28:14.99
+clpty04pp0001kw08q2dko0or	9ee25af5-386e-4dfa-9a70-d2283105b34f	clldpr18w00019gd8zo6jiizb	2024-01-05 15:47:16.57
+clpty1o440003kw0859rmc4h2	ec3ef7a3-1525-42d9-a3b7-696962ebd4e3	clldpr18w00019gd8zo6jiizb	2024-01-05 15:48:28.371
+clmsuo7bp0001jo08wuu2dcx2	bb8a1bf6-728f-48b9-906c-0b8a478801b6	clmhezyxt000397aeagzgpy1w	2023-12-30 14:01:00.9
+clq523sat0003k108pqz8zxyb	6ea1e431-f7df-4566-af97-4c265a95bf5d	clmhezyxt000397aeagzgpy1w	2024-01-13 10:27:33.508
+clq5gxcgl0001js08icv5y8ip	67c1180b-7262-4a6d-97ad-f588b678cb14	clmhezyxt000397aeagzgpy1w	2024-01-25 22:42:33.219
+clq5h533d0001lb08acahgzp8	8388d2a8-6df3-44d3-9f28-3bfd1b2ad207	clmhezyxt000397aeagzgpy1w	2024-02-06 20:33:30.367
+clr263xs20001jt092z3frkh7	1a547cda-9e2f-490e-a151-6dc6b7e48412	clldrj90t0002ml08rnvabo89	2024-02-05 14:36:02.878
+clr26636f0001l508najbslfr	b7bc1543-ed9d-4ca0-a22e-def3ab6d7281	clldrj90t0002ml08rnvabo89	2024-02-05 14:37:43.189
+clr268sf80001lf08c8umvyqj	ebcac1ba-7b09-4ecb-87b4-94f87fbac8c0	clldrj90t0002ml08rnvabo89	2024-02-05 14:39:49.219
+clr4ohaaw0001l208k1nrn7sy	6bbb8df1-fa38-422a-aa5d-4d9e5bbb979b	clo5wfos70007mi08v7lb9w8g	2024-02-07 08:45:51.076
+clr4ohodp0001jv08u2iwcp43	0b5d1d97-1a3c-43b4-9815-c3d78cf592fd	clo5wfvzw0008mi088vj4gxdb	2024-02-07 08:46:09.322
+clr4ohpq80001l508deqbwv8b	12ce2c59-1cdb-45c1-a7e3-6f918e164689	clo5wd4cy0001mi08480c1lf2	2024-02-07 08:46:11.068
+clr4oito80004l2087bqu7yw7	4ee93e9e-9d52-428a-a3d7-a8ed78044dc9	clo5wcokk0000mi087iu1iub4	2024-02-07 08:47:02.839
+clr4oj4oo0001i608kakxil9i	a5daaeb7-674a-4988-90f1-1cc35da2c6dc	clo5wf4dp0005mi08bmwuoxcu	2024-02-07 08:47:17.109
+clr4ojmab0001ld08wpuiq945	7099c450-6932-4e68-a86c-cf433464a1b5	clo5wesvb0004mi08n1jhswlj	2024-02-07 08:47:39.921
+clr4oms7r0005i608bxrq9bg4	2a52169f-4672-44d2-8f95-9f993a39c80e	clo5wg26d0009mi08ib4l4k0v	2024-02-07 08:50:07.574
+clr4onl2e0005jv0872cyz5m1	e971de56-b6f6-4064-8211-5ef5424700c4	clo5wgudk000ami085ycihh8j	2024-02-07 08:50:44.965
+clr4oo5p10007jv08paeag4rt	6e63d650-0fb4-471f-9940-46e59fc4942a	clo5wff9h0006mi080d0dw06k	2024-02-07 08:51:11.616
+clr23k5p50001ic08kjlhibz4	9c8d483c-2c71-45ec-96ae-c8117477f985	clldpr18w00019gd8zo6jiizb	2024-02-18 14:44:17.64
+clrkrf1m30001i108a9b9dv2l	3a71d877-e3c9-4dad-a71b-184f652e3b16	clldpr18w00019gd8zo6jiizb	2024-02-18 14:52:24.168
+clre23zbm0003jq08smjaoznj	cef5416c-95fc-4b27-819e-69bdf118bf73	clmhezyxt000397aeagzgpy1w	2024-02-18 23:17:29.234
+clrns29wy0001jw08xhlzsv64	fa434f6b-a78a-42c7-bde7-ad7002ee5894	clrji0cye0001l2072k11zq4f	2024-02-20 17:33:46.542
+clrkrezec0001l508an4gc2rj	4808e7aa-650d-4805-8f30-39ba5a0c7154	clmhezyxt000397aeagzgpy1w	2024-02-22 07:30:56.747
+clrq2ulpb0001i508dc6f832g	a3b40dde-5620-4863-83cd-544f7977cf20	clmrpxxvh000544aexo3ihmtc	2024-02-22 08:11:16.699
+clre214ko0001jq08xr2rrym0	ee7a0de3-b289-46b4-839b-2f5f357f5566	clmhezyxt000397aeagzgpy1w	2024-02-13 22:15:07.365
+clreoj02x0001if086jxl5vei	dcacb01c-954e-449f-99ae-7b30f1ae4e44	clreo46ni0000jz08bp4rwp2j	2024-02-14 08:44:52.903
+\.
+
+
+--
+-- TOC entry 2623 (class 0 OID 24614)
+-- Dependencies: 218
+-- Data for Name: User; Type: TABLE DATA; Schema: public; Owner: default
+--
+
+COPY public."User" (id, name, email, "emailVerified", image, role, "isBanned", "domainId", "creationDate", "lastUpdateDate") FROM stdin;
+clo5wfvzw0008mi088vj4gxdb	\N	316298@etud.uco.fr	2024-01-08 08:46:08.235	\N	USER	f	clmrpxxg7000444aeox804clc	2023-10-25 15:17:21.98	2024-01-08 08:46:08.238
+clm7vl39d0000lc08n3hi8m7t	\N	neyssensas@gmail.com	2023-09-07 07:45:22.767	\N	USER	f	clldpr0xs00009gd8mn4bb7hv	2023-09-06 15:09:32.737	2023-09-07 07:45:22.769
+clo5wd4cy0001mi08480c1lf2	\N	316351@etud.uco.fr	2024-01-08 08:46:09.957	\N	USER	f	clmrpxxg7000444aeox804clc	2023-10-25 15:15:12.848	2024-01-08 08:46:09.958
+clo5whasd000bmi08u9cm7mib	\N	316284@etud.uco.fr	2023-10-27 06:43:41.617	\N	USER	f	clmrpxxg7000444aeox804clc	2023-10-25 15:18:27.803	2023-10-27 06:43:41.618
+clrjhztzk0000l207rolaa8v8	\N	corinne.schuchard@univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-18 17:40:51.645	2024-01-18 17:40:51.645
+clo5wcokk0000mi087iu1iub4	\N	316375@etud.uco.fr	2024-01-08 08:47:01.738	\N	USER	f	clmrpxxg7000444aeox804clc	2023-10-25 15:14:52.386	2024-01-08 08:47:01.74
+clo5wf4dp0005mi08bmwuoxcu	\N	316280@etud.uco.fr	2024-01-08 08:47:14.624	\N	USER	f	clmrpxxg7000444aeox804clc	2023-10-25 15:16:46.19	2024-01-08 08:47:14.626
+clo5wesvb0004mi08n1jhswlj	\N	316306@etud.uco.fr	2024-01-08 08:47:38.823	\N	USER	f	clmrpxxg7000444aeox804clc	2023-10-25 15:16:31.269	2024-01-08 08:47:38.824
+clmt178mu0000mt08y3ru283t	\N	pradal.d@gmail.com	2023-09-21 13:00:02.305	\N	ADMIN	f	clldpr0xs00009gd8mn4bb7hv	2023-09-21 10:29:53.909	2023-09-21 13:04:58.02
+clo3aznzg0000me0852abnf7w	\N	girardboisrame@gmail.com	2023-10-23 19:43:06.297	\N	USER	f	clldpr0xs00009gd8mn4bb7hv	2023-10-23 19:41:20.811	2023-10-23 19:43:06.298
+clrqaxm2s0001jr080y8ffg4a	\N	basile.cosson@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:57:34.001	2024-01-23 11:57:34.001
+clo5wg26d0009mi08ib4l4k0v	\N	316260@etud.uco.fr	2024-01-08 08:50:06.472	\N	USER	f	clmrpxxg7000444aeox804clc	2023-10-25 15:17:29.987	2024-01-08 08:50:06.473
+clo5wgudk000ami085ycihh8j	\N	317678@etud.uco.fr	2024-01-08 08:50:43.866	\N	USER	f	clmrpxxg7000444aeox804clc	2023-10-25 15:18:06.534	2024-01-08 08:50:43.867
+clo5wff9h0006mi080d0dw06k	\N	316378@etud.uco.fr	2024-01-08 08:51:10.514	\N	USER	f	clmrpxxg7000444aeox804clc	2023-10-25 15:17:00.293	2024-01-08 08:51:10.515
+clr7zrd8m0000l408p6j7lyt5	\N	agathe.celerier@univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-10 16:24:55.666	2024-01-10 16:24:55.666
+clr9hsb9z0000lc085dyjqohl	\N	gguiguen@uco.fr	\N	\N	USER	f	clmrpxxg7000444aeox804clc	2024-01-11 17:37:19.043	2024-01-11 17:37:19.043
+clmhezyxt000397aeagzgpy1w	\N	gregoire.cliquet@univ-rennes.fr	2024-01-19 14:52:20.217	\N	ADMIN	f	clmhezyif000297ae5e5rnuu9	2023-09-13 07:22:55.265	2024-01-19 14:52:20.219
+clrqazdb10003ky081v89sfnn	\N	pierre.debuf@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:58:56.029	2024-01-23 11:58:56.029
+clrqazx2t0004ky08zweick1w	\N	noan.delaneau@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:59:21.568	2024-01-23 11:59:21.568
+clldpr18w00019gd8zo6jiizb	\N	louisetiennegirard@gmail.com	2024-01-19 14:52:23.069	\N	ADMIN	f	clldpr0xs00009gd8mn4bb7hv	2023-08-16 12:33:06.688	2024-01-19 14:52:23.071
+clrqb0qb20005ky08hf11o2b1	\N	ael.delaunay@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:59:59.452	2024-01-23 11:59:59.452
+clrqb211q0006ky08e2bob1ep	\N	awen.escoulan@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:01:00.027	2024-01-23 12:01:00.027
+clrkqhuo70000if08suhlzgfj	\N	sophie.girard@univ-rennes.fr	2024-01-19 14:53:13.056	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-19 14:26:35.443	2024-01-19 14:53:13.058
+clo5wfos70007mi08v7lb9w8g	\N	316399@etud.uco.fr	2024-01-08 08:45:48.301	\N	USER	f	clmrpxxg7000444aeox804clc	2023-10-25 15:17:12.626	2024-01-08 08:45:48.303
+clrji0cye0001l2072k11zq4f	\N	sophie.marchand@univ-rennes.fr	2024-01-21 17:33:45.436	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-18 17:41:16.227	2024-01-21 17:33:45.438
+clreo46ni0000jz08bp4rwp2j	\N	gcliquet@gregoirecliquet.xyz	2024-01-15 08:47:41.212	\N	USER	f	clmrpxxg7000444aeox804clc	2024-01-15 08:33:21.499	2024-01-15 08:47:41.213
+clldrjw1n0002lb08bdzng9ga	\N	gregoire.cliquet@gmail.com	2024-01-15 09:24:47.65	\N	ADMIN	f	clldpr0xs00009gd8mn4bb7hv	2023-08-16 13:23:32.988	2024-01-15 09:24:47.651
+clldrj90t0002ml08rnvabo89	\N	sophiegirardboisrame@gmail.com	2024-01-15 09:24:52.422	\N	ADMIN	f	clldpr0xs00009gd8mn4bb7hv	2023-08-16 13:23:03.149	2024-01-15 09:24:52.424
+clmrpxxvh000544aexo3ihmtc	\N	sgirard@uco.fr	2024-01-23 08:11:15.582	\N	ADMIN	f	clmrpxxg7000444aeox804clc	2023-09-20 12:26:58.109	2024-01-23 08:11:15.584
+clrqap2mz0000lb08ljp7xv1v	\N	lucie.bariou@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:50:55.56	2024-01-23 11:50:55.56
+clrqaq8fh0000ky08u5q4u821	\N	david.bobet@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:51:49.718	2024-01-23 11:51:49.718
+clrqaqst70000l508qboj65v9	\N	tom.boeuf@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:52:16.137	2024-01-23 11:52:16.137
+clrqarfh00002lb08sqln35p6	\N	dylan.boulaire@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:52:45.505	2024-01-23 11:52:45.505
+clrqarywz0001ky0898bz8z2q	\N	hadrien.cabon@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:53:10.704	2024-01-23 11:53:10.704
+clrqasiji0001l508pa2n40z6	\N	baptiste.cadio@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:53:36.14	2024-01-23 11:53:36.14
+clrqatfnp0003lb08jw8oq5e6	\N	cabin.castelain@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:54:19.058	2024-01-23 11:54:19.058
+clrqauex00002ky08vbfj1ut5	\N	tiphaine.chanclou@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:55:04.753	2024-01-23 11:55:04.753
+clrqav2ww0002l508u1mpkm6p	\N	felix.chauffray@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:55:35.854	2024-01-23 11:55:35.854
+clrqavskn0005lb08rtkkhaq5	\N	alan.cloarec@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 11:56:09.109	2024-01-23 11:56:09.109
+clrqb2tvv0007ky08ittbwc18	\N	joan.flatres@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:01:37.401	2024-01-23 12:01:37.401
+clrqb3k6j0008ky081xya7w5e	\N	bertille.flohic@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:02:11.48	2024-01-23 12:02:11.48
+clrqb4hmo0009ky08qk4vlog1	\N	jean.giraudeau@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:02:54.829	2024-01-23 12:02:54.829
+clrqb568r000aky08dc23qdkg	\N	mael.goasdoue@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:03:26.728	2024-01-23 12:03:26.728
+clrqb5tjt0006lb08dpquczd0	\N	mael.guibre@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:03:56.457	2024-01-23 12:03:56.457
+clrqb6lj40007lb08p977jz17	\N	kelvin.huchet@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:04:33.198	2024-01-23 12:04:33.198
+clrqb7adb0008lb08ehog2pzu	\N	zoriana.kyrisha@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:05:05.387	2024-01-23 12:05:05.387
+clrqb89o70009lb08b263tzbk	\N	colin.lallauret@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:05:51.141	2024-01-23 12:05:51.141
+clrqbaqfz0000k208k9n2eif6	\N	corentin.legall@etudiant.univ-rennes.fr@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:07:46.272	2024-01-23 12:07:46.272
+clrqbbwxj0002jr08jzclg2zb	\N	rozenn.leguillou@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:08:41.252	2024-01-23 12:08:41.252
+clrqbcs4h0000lb08mlmelncb	\N	owen.le-morvan@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:09:21.762	2024-01-23 12:09:21.762
+clrqbdxkg000alb080n48m53a	\N	logan.lemoullec@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:10:15.473	2024-01-23 12:10:15.473
+clrqbesvm0003jr08ve6gy2yf	\N	melvyn.lepape@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:10:56.051	2024-01-23 12:10:56.051
+clrqbfzcd0001k208h2lmryca	\N	lilian.leroux@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:11:51.086	2024-01-23 12:11:51.086
+clrqbgway0001lb086pb2pcme	\N	imanol.leporq@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:12:33.802	2024-01-23 12:12:33.802
+clrqbibl00004jr08oo3qmxgx	\N	gael.lohezic@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:13:40.177	2024-01-23 12:13:40.177
+clrqbipex0005jr085qve2sg0	\N	soan.morey@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:13:58.101	2024-01-23 12:13:58.101
+clrqbj5wt0006jr08pm10nx02	\N	lola.navarro@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:14:19.481	2024-01-23 12:14:19.481
+clrqbjjej0007jr08tywpkp94	\N	landry.noel@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:14:36.967	2024-01-23 12:14:36.967
+clrqbk5fk0008jr08lhzu59p3	\N	mathis.peschard@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:15:05.516	2024-01-23 12:15:05.516
+clrqbkhm10009jr08jhhnzc2a	\N	nils.primet@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:15:21.301	2024-01-23 12:15:21.301
+clrqbkv6t000ajr08tnz5mvp2	\N	alan.prioul@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:15:38.897	2024-01-23 12:15:38.897
+clrqblf37000bjr081qkv3uxq	\N	evan.quedec@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:16:04.688	2024-01-23 12:16:04.688
+clrqblvyx000cjr08d59d0788	\N	kevin.roussel@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:16:26.566	2024-01-23 12:16:26.566
+clrqbn4gu0002lb08ogt55fyy	\N	tom.stapel-cortesero@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:17:24.318	2024-01-23 12:17:24.318
+clrqbnndp0003lb08par097pa	\N	iris.boubonnec@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:17:48.745	2024-01-23 12:17:48.745
+clrqboac50004lb087cp58q69	\N	ingrid.champain@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:18:18.496	2024-01-23 12:18:18.496
+clrqbovfb0002k208jx9ef14q	\N	louanne.gutierrez-moreno@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:18:45.911	2024-01-23 12:18:45.911
+clrqbpogr0003k2083bs5s85b	\N	alice.hoedts@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:19:23.463	2024-01-23 12:19:23.463
+clrqbr324000ejr088cnv55vf	\N	cecile.moinard@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:20:29.117	2024-01-23 12:20:29.117
+clrqbrhug000fjr08i5zrtaqq	\N	nathanael.pean@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:20:48.196	2024-01-23 12:20:48.196
+clrqbrv1p000gjr086iv6d4f1	\N	lucie.raulo@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:21:05.305	2024-01-23 12:21:05.305
+clrqbqex4000djr08g4ub3swb	\N	noam.legarsmeur@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:19:57.749	2024-01-23 12:19:57.749
+clrqbsmr8000hjr08aky1t579	\N	alex.roho@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:21:41.216	2024-01-23 12:21:41.216
+clrqbtglf0005lb085iwe0xiu	\N	theo.herve@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:22:19.887	2024-01-23 12:22:19.887
+clrqbujj4000ijr08s7lvr225	\N	theo.legourrierec@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:23:10.349	2024-01-23 12:23:10.349
+clrqbv4z8000jjr08odmpd65j	\N	mael.provot@etudiant.univ-rennes.fr	\N	\N	USER	f	clmhezyif000297ae5e5rnuu9	2024-01-23 12:23:38.144	2024-01-23 12:23:38.144
+\.
+
+
+--
+-- TOC entry 2621 (class 0 OID 24599)
+-- Dependencies: 216
+-- Data for Name: VerificationToken; Type: TABLE DATA; Schema: public; Owner: default
+--
+
+COPY public."VerificationToken" (identifier, token, expires) FROM stdin;
+louisetiennegirard@gmail.com	06c4bb0fe6879cf0dae030cae7c17c28ccb47c5eb3ae48a237478e9a46f510d2	2023-08-17 13:05:10.741
+louisetiennegirard@gmail.com	8f1e9d6d9748f9acc1b20ef164d6bb8c56b0973ed09ddac3e6b523693f0ab2c7	2023-08-17 13:08:48.471
+sophiegirardboisrame@gmail.com	e905d453a2be70472425aa4a2b8448b34acd260f94c8bb45899039b734e05213	2023-08-17 13:10:09.559
+louisetiennegirard@gmail.com	50ca4a4a62333cb3249ed8bacc960a2b15dd3a2a244d9f8d1139fe9beb171775	2023-08-17 13:28:42.257
+louisetiennegirard@gmail.com	c72bd61053ee15cc2a42fc47d9da0302028d70419f1bf765fb51cfd74da1b8d2	2023-08-17 13:29:21.631
+louisetiennegirard@gmail.com	9b8f998c3f4f083f988806cc252665c5ab59187b83399766ee7ff6b6e5c7456a	2023-08-17 13:31:20.162
+sophiegirardboisrame@gmail.com	ef04f3d9b69de0214bfe42eb186da8f2d10000722c66b5d3a03d844c64fe6a34	2023-08-18 07:00:35.428
+sophiegirardboisrame@gmail.com	8d62eb0fc4725c7c5dd61d1737b727c751cd1a57f5fa65b6cb8d67467c7f69c0	2023-08-18 07:16:00.553
+sophiegirardboisrame@gmail.com	162e2955d3be7db838d83ba23486612c0c807d1cc1f00a58f772dd85532f5a38	2023-08-18 07:43:24.83
+gregoire.cliquet@gmail.com	ec8be64b019008e03d73ca0638828ee8e042a04d624894646d38a031a869a26e	2023-08-18 12:29:51.821
+sophiegirardboisrame@gmail.com	a7c50119cf45cad65e04875c5ea487e9c10cea4bd3bfe114ae06ed8dc0aa4f7a	2023-08-18 17:46:07.369
+sophiegirardboisrame@gmail.com	0b9da66e10dac3b1d79e4fe85f32d91e11acf4535e01932b437381accf04ad02	2023-08-18 19:36:10.038
+sophiegirardboisrame@gmail.com	a73934bc4d6b3ab3665314c3ed74977be209a3dd14c0b568d0f01571502291fe	2023-08-18 19:37:34.29
+sophiegirardboisrame@gmail.com	dac1c8374cdc168284431dadc8f940c05910702ffa046348c73bf08c5ae6ef2c	2023-08-18 20:07:44.762
+sophiegirardboisrame@gmail.com	c76a74087531f7d97d211f8392f236b36c5dbb93bcd82b9f4adef4f37264643b	2023-08-19 18:04:28.134
+sophiegirardboisrame@gmail.com	72e66b8fd20b934fd184d32f49090d0002d2fea416d7964ddb6314a3606eabce	2023-08-22 14:58:51.353
+sophiegirardboisrame@gmail.com	084baebc97ca06bf2f6cdca9e661a54799b04fbca6969ceb9b97a1d943b98c6a	2023-08-27 08:26:31.301
+sophiegirardboisrame@gmail.com	1a1a4264b871ca3c6464e7d328f32db693eb8b2279a1f9ac33854927cb9aadb9	2023-09-02 09:48:35.166
+sophiegirardboisrame@gmail.com	87301a2d6da5f34e478c063728d1323c3fbd95df49a2aba69390a80d585b84db	2023-09-02 12:20:42.153
+louisetiennegirard@gmail.com	f4dd854ef4bb7678d0c6d9cc2353e72934f64bb692d92727f5bf85a953bd06e9	2023-09-04 20:33:15.612
+louisetiennegirard@gmail.com	1fdbff0f5bbb5c25b565a1ae491d0e3deaf72e52fa222a08b78cf673e044a831	2023-09-04 20:35:34.863
+louisetiennegirard@gmail.com	944f30db76af11546b316de04a1255688abbb88572ab798f785be555339600a3	2023-09-04 20:36:21.088
+louisetiennegirard@gmail.com	ca0d832605d1c736f184790818921d170bc3f1b6c41092e36845218ae974e2e4	2023-09-05 07:47:04.898
+louisetiennegirard@gmail.com	32840f55914c1bfa5795857950d5b209a095932ffd3df03c8743e660ae63fa0a	2023-09-05 07:50:54.786
+louisetiennegirard@gmail.com	9e4fe20c2c268e93757c31650d29d319e27fd7dd5fadc70a83c66fa83579f8c9	2023-09-05 07:58:42.901
+louisetiennegirard@gmail.com	4392c84c595a0a7407d43b48ef64332d9b340a8c4404439125c0e0db88b9abda	2023-09-05 07:59:58.899
+louisetiennegirard@gmail.com	1118042ba9793bab3b338c4f6da00e7492cf3bad4aeb7bf72bc9e23ad45dbac8	2023-09-05 08:18:57.734
+sophiegirardboisrame@gmail.com	5ae26b00c9080120a7c14444a0e33dffdcf3781a54ae629f7e5fa92fa948fca5	2023-09-09 09:33:48.907
+sophiegirardboisrame@gmail.com	3d63954b175a18333fc51d18eae0b1a1a3bc49f39b1a5c02fae49f486631f078	2023-09-10 08:05:35.011
+gregoire.cliquet@gmail.com	7b13b4099a874cb5fae8c93f485bf297f8c2b7e55ecf9d6370ee4135e4b0b355	2023-09-11 08:23:35.306
+gregoire.cliquet@gmail.com	8f658d27276b4fbd72498dd10af1c432bdd92c9b21c8c9b3a32e72b31a86e739	2023-09-16 08:44:06.201
+sophiegirardboisrame@gmail.com	98a6b5ef3abcc9750ec9a46f78757bbf4b3188914aea50936dad3e568b55be02	2023-09-21 12:53:18.724
+gregoire.cliquet@gmail.com	b73fee18a0c7fb2440ae89ff1f8968b8e65ceb248ab1ef9977c605d7eaa5be50	2023-09-21 16:50:21.44
+girardboisrame@gmail.com	b4a2e6b764a41a9b26a255e8af651260de53bb2125f0c37e6528a10119bc912b	2023-09-22 09:52:47.699
+girardboisrame@gmail.com	6b9e6085899d0e8174cdd07a2cc38b42271ee7225b95328217a864c487e4e984	2023-09-22 09:52:51.402
+sophiegirardboisrame@gmail.com	076064dd036b7445ec8e0423a4a44111768cff906be8c57bc7c4eb400e746321	2023-09-22 09:53:25.415
+gregoire.cliquet@univ-rennes.fr	26e7171055982a63ccd8904db4a92fabccea20ac13435e1ab6a776a9be991fb6	2023-09-24 10:26:56.965
+gregoire.cliquet@univ-rennes.fr	87b301661b70192a703ff641456fd9bcdc53beefe9ce0063c4376771261b5827	2023-09-26 04:31:45.487
+316335@uco.fr	cb0b0f00d497f2767eb862ab68edee862908483a99451b9f0300d731f8d99683	2023-10-27 07:57:11.45
+316351@etud.uco.fr	1cf77e1708ae11b7edd8409a61c732f1763a65ae9165922aa04f3c651e04b873	2023-10-27 07:57:14.779
+316375@etud.uco.fr	f5df6c11dde754eef6490e89819cc3d4c43d1e3210dd247ecad6a39df77e8e79	2023-10-27 07:57:19.499
+316280@etud.uco.fr	8ddd081292fb6a51f2c4e695cceb75b17fb45d5036203aa6bf3af701fd17d7e1	2023-10-27 07:57:22.406
+316280@etud.uco.fr	c8c5a588fd11b968ccd33402c1dc8e4f9b8554c2ca57d9546cbf1fa8f29df157	2023-10-27 07:57:25.062
+316399@etud.uco.fr	27cce300ec00ee50f85883ea5d288793aff41e3c8bd14a7bb833f9b5ee91da3f	2023-10-27 07:57:36.272
+316280@etud.uco.fr	0b0a4fa93e953613c7f005a50751d3d9439f0391a5865ac7d1d4715ad59378c3	2023-10-27 07:58:39.398
+imanol.jordana@etud.uco.fr	ad06bd78a1a7cc5c20ca813e4231a33bc2848c82f8378e331f0fd81c642faf17	2023-10-27 08:03:24.305
+imanol.jordana@etud.uco.fr	5441105287badb4bdb16298d68109eb00dbb0497d6026a37d2b916902b2566a0	2023-10-27 08:03:26.552
+316335@etud.uco.fr	47e89f1830cde3f65cdd3fa4a58ef19e2330c036ab8e45e61428e0c3888c6129	2023-10-27 08:05:33.578
+316335@etud.uco.fr	01c61e9e21158d366709dd839c587d81aa2b85f22653ef423efa05112c3b9daf	2023-10-27 08:06:14.533
+316335@etud.uco.fr	607ecc0244aad764fd862fa34bb46ba981bfb6faf6b6f5aa954f584016e90312	2023-10-27 08:06:42.197
+316335@etud.uco.fr	ffc2821c386a3db733fd97876599b821704c62490165b6f70ef75b3e55d061d9	2023-10-27 08:08:43.381
+316335@etud.uco.fr	46d4add3e01420fd6cf7fc3570861710cdde81b4b9ca81ee48652352af17787b	2023-10-27 08:08:44.725
+316335@etud.uco.fr	18839ad993bb484f991e291839e3a98a6ea32555803263d6eb0e67942c92479b	2023-10-27 08:11:32.384
+316280@etud.uco.fr	e13166b30d394d2c510c1b115a94eb71ce8814cf4d32d93fd8a5d97aae87b710	2023-10-27 08:13:55.649
+316335@etud.uco.fr	51286bab29d1994b28ab95ce96c4d7db9eaf61bb38b07badbd63115e87ee8fd4	2023-10-27 08:27:05.365
+316335@etud.uco.fr	b770586fe15884e51055c6bbe0f0d3263fac2a2cc0b6e25fc2b5051cec251194	2023-10-27 08:27:06.892
+316399@etud.uco.fr	bc6cd07195742caeaf35f9c63b00b9a9a3784f9540ae3716d994a8cdf48e2658	2023-10-27 11:53:01.793
+316280@etud.uco.fr	83bee162d35563b4de7359c36680d22a9cba99f02849ae7e91ac7ea1f4800303	2023-10-27 11:53:02.652
+3176378@etud.uco.fr	472222993b315937fa5074a460836fa242ca3fe5388097b53968983fd3d2dee8	2023-10-27 11:55:18.216
+3176378@etud.uco.fr	7210fc9856e17157c2a5f05fa954ad592dc1578b6d7dce1083aca7c2f6c6da7c	2023-10-27 11:55:19.553
+316260@etud.uco.fr	823b22b909efe921fbf975c0bb150bbdda59b95fad6cdd1a130aae907dc8afcd	2023-10-27 11:55:23.334
+316378@etud.uco.fr	72e2a560166a2a79fa65d80f8b0451b27973031dc8bc12da58214175fa7fec68	2023-10-27 11:55:34.122
+316378@etud.uco.fr	b5eb2705b1593e023475eb82600c5508dd6251da325c6fda97838b5075b673b2	2023-10-27 11:55:36.668
+317678@etud.uco.fr	c7a6abaed283c725329e69d2c3f4a49dd5b3f9010f4947b48064eb113f2b59f2	2023-10-27 11:58:19.3
+316298@etud.uco.fr	66da530e812225ded1d59fdc850719d4d27aed17242a8c5d82aace592ca63a26	2023-10-28 06:52:28.193
+sgirard@uco.fr	df77100e561b08d3bcd181fdcd7d7de6b788303bfaadf0cbb8568706e01f64f9	2023-11-05 08:39:34.752
+sgirard@uco.fr	aa4d6311791dbeb48a7643ea4485bf52022c751b3a13f379ebaf9a572c81f4f8	2023-11-05 08:39:37.332
+gregoire.cliquet@univ-rennes.fr	36c736f593531a3d4b21aafc7aad7a19f02aaeb75f502f2272657a59c167cef2	2023-11-12 06:49:26.992
+gregoire.cliquet@univ-rennes.fr	853e508f788c892f21caa10fc94c780da72c8039ed54af787f5404679ccf6fef	2023-11-28 10:23:15.184
+sophiegirardboisrame@gmail.com	b9bf9b3a408aa23643f62355a3c68b153c104572ca40e14f3b38844c10cf252d	2023-12-07 15:31:56.5
+sophiegirardboisrame@gmail.com	a5a075d2917339f81d7574d6fc08570680718250eb75cd99939d59c95a20fad4	2023-12-07 15:31:57.85
+gregoire.cliquet@univ-rennes.fr	ff87487e072e31afe928327b54555387426c432140c421b7e9416697546eea0d	2023-12-15 17:20:05.604
+sophiegirardboisrame@gmail.com	dea5523d0a5db84d0851e4b94b7e699755eb380c19f0ee4739df57f7d419167c	2024-01-07 14:35:44.493
+sophiegirardboisrame@gmail.com	209f745fbfbd849887e24fa44dbbfaea0cba5548c1e8de53ab198f9da2263055	2024-01-07 14:39:23.896
+s.girard@uco.fr	e0315bd012ad5aede8ad69b54cb6fd6ae73ce41fa47d2e7a2afa5857142dd1e8	2024-01-08 21:34:06.199
+s.girard@uco.fr	85d80c18d18d40515053d83dce6195cc716c70e3534490a4f461cf37c9793dae	2024-01-08 21:34:07.762
+sgirard@uco.fr	d811d3b56c44288e55f2db2366764cdde7d356d5f8bde881f697beaf546f06d3	2024-01-08 21:35:26.004
+316399@etud.uco.fr	c13eb9397bc94fdd8fdf6964691bd613da455c3f81923287d35c7a0291b631f9	2024-01-09 08:45:34.749
+316298@etud.uco.fr	104056c76b782c9d161794a858ecf977b0bed8965ccaf359f35980b6780d6f39	2024-01-09 08:45:44.599
+316306@etud.uco.fr	12312f308cabb5911a312f575e62592d87c71af375cd6283723283fb67ce088f	2024-01-09 08:45:50.711
+316306@etud.uco.fr	8f450a003c60b35b0ce4babb0ef5a391000d18f22fb80324338340e2be5ec25a	2024-01-09 08:45:51.101
+316306@etud.uco.fr	1611b54f4a5c92813e254de14951cbcf1224d27fc2b671cd15e7119cc877db3f	2024-01-09 08:45:53.749
+317678@etud.uco.fr	48a59f8c712022ccbd5c3178d9cf84b6a67056568029d79f0d3ddd894a657601	2024-01-09 08:46:19.016
+316260@etud.fr	7077848a99b1bd0f216b1f903e713543da301b0b246538f6319df72892c74844	2024-01-09 08:46:19.004
+loutrivin@gmail.com	99b78f3338421736052f482ae1451b32adb600fafb9f5057ba08050cc11f63e7	2024-01-09 08:46:29.124
+loutrivin@gmail.com	ba9c4b5d1ba1585cf97fe94259f239f628e59cd1c89e41541375305cf6172bcd	2024-01-09 08:46:33.406
+313660@etud-uco.fr	c0c3f39b79d00607d1b0fa62dc6467e6d19f65b212fea0c505f42394b033507f	2024-01-09 08:46:38.729
+313660@etud-uco.fr	c6d4055f77700af8c9d9214bd434d84b947cb9bf2575a2007670152f6b1a8c1a	2024-01-09 08:46:40.984
+316280@etud.uco.fr	262d0babc5498e33fa879e291505eeb6e4cb68a4934ccab7f31887fd60cb251e	2024-01-09 08:46:55.899
+316280@etud.uco.fr	9f37d12bf9aaa799a350b0c40b2f240c72edf844c242458b33638009a8a9d6be	2024-01-09 08:46:57.906
+loutrivin@gmail.com	7400f9979ec703c67b30ee862ed069b1ed66dc8c8a36d649fa962952c4024b13	2024-01-09 08:47:38.953
+316260@etud-uco.fr	3eeb6ab88f26a7b18e7f1d4b5e2da89ff02e6b83413d91fd9906a6a27ad29e62	2024-01-09 08:47:56.473
+316260@etud-uco.fr	c932d24d277f6711abf82e9c80253d7519b6d61569820be7f41d073cbcc7a742	2024-01-09 08:47:58.444
+317678@etud.uco.fr	eaf8361b42868f5143302d3ace0c63f125cb8a54f207f1f521b2e7b8616489a0	2024-01-09 08:48:05.048
+317678@etud.uco.fr	1abd632211d69f3bff28b6f77305b97ebff0498a47fc60e842094d67841b7b2e	2024-01-09 08:48:06.325
+317678@etud.uco.fr	7ae6e5e144bace5c4f61016d4e48f3005d619ad5265856edc9c45809324f68da	2024-01-09 08:48:07.598
+316335@etud.uco.fr	85be8454899fa3f4f7608aba6efced0d90044b4b0a8da913d3a4d7e7ee2d230e	2024-01-09 08:48:16.163
+316335@etud.uco.fr	2765f6144645a1462f5a0f3317ddda6dfc79be5c580b5e042b88fbcb5879e61d	2024-01-09 08:48:18.911
+317678@etud.uco.fr	c590dc6f1fcb72db3de1a03875b0fdded5c71e58ca788295f54dabcb3417ef2c	2024-01-09 08:49:00.315
+317678@etud.uco.fr	b878c201920208b73489af140f798bd09a819e3d5ddbb597dac7caeb92fea4e5	2024-01-09 08:49:02.914
+316260@etdud.uco.fr	9695653405c3ab0da33e40f88200ea98363200af5b6e87ad5008bd97ddab854d	2024-01-09 08:49:16.338
+316260@etdud.uco.fr	6359636a3600fd1d2fa103b1233c94a936dc2652b116dbdf568127d5897b431b	2024-01-09 08:49:18.762
+316260@etud.uco.fr	586e067f60095d4955c2930766729d53a8dff7c676bcfe1381f53cf6d575a3f7	2024-01-09 08:49:49.548
+316260@etud.uco.fr	aeb32d6a6dfe69b2a2f09f47a925c9fa1606ce52011f76e229346dec423e7cef	2024-01-09 08:49:54.131
+agathe.celerier@univ-rennes1.fr	5badadc9e8d6e46a5fe3471f5f7a006ca4dbfe6c01f528cde7c384c732f39f01	2024-01-15 21:53:33.972
+sgirard@uco.fr	47d3e29f7c32e38cfc15dd9704186cde9fec9ef771db456e7ca0e71a1a55dc4c	2024-01-16 08:04:13.854
+sophiegirardboisrame@gmail.com	465ad76761657ce1e707db7d92053ed77f3021660a7d6ee6a7cb5a6da611d139	2024-01-16 09:24:35.026
+sophiegirardboisrame@gmail.com	b020a02c54d194279bd67c73e853090063300484f7b1f58d23838f6422388041	2024-01-16 09:24:36.684
+dpradal@salveterra.fr	086c3567e5e5291729ed31cc49a6ccc1d6879684e42deaeae66d9f2ea08d3d87	2024-01-16 16:00:06.477
+dpradal@salveterra.fr	2e2bd90ec9e15647ee2ee7988e4bd31b675386636c85e43c4a6901f85fd79b25	2024-01-16 16:00:07.892
+corinne.schuchard@univ-rennes.fr	92bb5cb7caacd1cab2523dc3ad7b1b62c812f840c90ed299efd1428376d7dcf7	2024-01-19 19:06:37.08
+corinne.schuchard@univ-rennes.fr	19e59da682b7eea3678d23cb1c8cf94404ee45e8cf37c15965a865da0acf3587	2024-01-19 19:06:39.468
+corinne.schuchard@univ-rennes.fr	da17babe911bb8a1f72fbb3ffa47e2b851915f35de34ebdf2f8df94cd1219d9a	2024-01-19 19:06:41.062
+corinne.schuchard@univ-rennes.fr	abb7d5368f15aeb8c0f23e21d5890b169dd8d8c2a3825f8dcee872f54e7e4bdc	2024-01-19 19:07:10.933
+sophie.girard@univ-rennes.fr	698679d881bb5c9d3e87bf2ecd953dadd51e88784c1793d74ceb9122f2fa8d34	2024-01-20 13:02:46.67
+sophie.girard@univ-rennes.fr	f596d277f05686cd32a624be0cf901d1e0199d7a03767a55116c714d14b1c069	2024-01-20 13:02:48.352
+sophie.girard@univ-rennes.fr	6b2a0117f32cb2440fb389a1f0bd316b4182092cc127c180df4b47055fe89b46	2024-01-20 13:02:51.279
+sophie.girard@univ-rennes.fr	62a7b4ae92681bcc81572bcf4d94c770dbae364e9ebafd69d499df06b2332d8a	2024-01-20 13:02:51.455
+sophie.girard@univ-rennes.fr	8caa00778c88bdb8eaab46da81828f54130fedf870043d8c555bdad01a53f2be	2024-01-20 13:02:51.468
+sophie.girard@univ-rennes.fr	78899a72dae512c31829eca2c7fd31bde6902caf22bac4565d806781a4f88dfc	2024-01-20 13:02:52.337
+sophie.girard@univ-rennes.fr	04b6f335f3faabe5a15c64168f1d84863b02b81f4330ad2bcec2da42af8a9e9b	2024-01-20 13:22:18.152
+sophie.girard@univ-rennes.fr	422c742311df1b5947409188a12c4711a86e9c8ed215693344bdbc5376265184	2024-01-20 14:18:59.96
+sophie.girard@univ-rennes.fr	ecefe19d1063b0932422e6aa1214550479be73e74b4138a1bc6243cc1192953b	2024-01-20 14:23:27.922
+sophie.girard@univ-rennes.fr	9308c435383efa11b23e491c86860bcdea448e4fc9f0904cc5b25673a4a85866	2024-01-20 14:27:10.313
+sophie.girard@univ-rennes.fr	c3a030246f63cdd16caeaa2db6043cf36056cd62fb7da782ee28b9eed503951c	2024-01-20 14:29:38.621
+gregoire.cliquet@univ-rennes.fr	efc8058ad4276247c11cdfb0273f06393365e0b89b6d21a0446dace1a39b2b07	2024-01-20 14:36:26.95
+gregoire.cliquet@univ-rennes.fr	717aff01a86f730cdf5789ca8ecd210f48abfe49b241ddf9a72da9851b57a0c6	2024-01-20 14:36:54.515
+gregoire.cliquet@univ-rennes1.fr	69257a20e81d27b9b222ae94fdd3aeac7fdec49cc1c90d3a0b75c22df2dd746b	2024-01-20 14:37:18.059
+gregoire.cliquet@univ-rennes.fr	7a5aaa8a0c7310647f3f0dc6ad4f7d53a2496eabf749fa9d0ba570111ac42785	2024-01-20 14:38:06.076
+gregoire.cliquet@univ-rennes.fr	fb1f2a00bdc848169e1ae77b10dbd9c18e15b1182253016301ba3c2017612dae	2024-01-20 14:39:11.023
+sophiegirardboisrame@gmail.com	9376bc5dd7f4b1d84f06030681135467322d7029541e2cbe136dd127458446be	2024-01-20 14:39:17.871
+gregoire.cliquet@univ-rennes.fr	b0d7996dd78f6b71a57d230eb93c55f41b6911241e00b704fe5d236c82614ff6	2024-01-20 14:40:29.818
+gregoire.cliquet@univ-rennes.fr	f35be28b2128bc6a59b5495ace7b7808856662f3c87cb48679d7f0d1f1ec0f86	2024-01-20 14:43:05.169
+louisetiennegirard@gmail.com	d213510633fb6b914ac464d90b53e9c9b7fcdba73a0657bb8606d124aa62dc54	2024-01-20 14:45:37.719
+sophie.marchand@univ-rennes.fr	3cdb5be724bee103d7c78679355cb779f75a90d5ab51834de79187223e018ea7	2024-01-22 17:33:28.065
+sgirard@uco.fr	923f6ff8f845d9c0f6bd01508536f6b2d2345af499de8141ce45a3427a542d97	2024-01-24 08:08:59.531
+\.
+
+
+--
+-- TOC entry 2627 (class 0 OID 24650)
+-- Dependencies: 222
+-- Data for Name: _BookmarkToFolder; Type: TABLE DATA; Schema: public; Owner: default
+--
+
+COPY public."_BookmarkToFolder" ("A", "B") FROM stdin;
+cllvxiva70000l4087c5pjf69	clleuvpbn0000l5085psb6iz4
+clleytlex0000l4082rc5oip3	clleuvpbn0000l5085psb6iz4
+clreooktv0000l5081kgrpe4k	clrep7heo0000jp08482my98d
+clrekej6b0000la0841eytwmu	clrewxzh00000l8080i9gz2o2
+clrdfeclp0000l208iena5qok	clrewxzh00000l8080i9gz2o2
+clrbd5i180000jo09wyettt0z	clrewxzh00000l8080i9gz2o2
+clr6fpum00000l508nha6jjck	clrewxzh00000l8080i9gz2o2
+clo4b6wi50000ju08gjlj4fwi	clrewxzh00000l8080i9gz2o2
+clr5o26xi0000l1074mtq16b4	clrewxzh00000l8080i9gz2o2
+clnd7e0aq0001l4095x82xpee	clrewxzh00000l8080i9gz2o2
+\.
+
+
+--
+-- TOC entry 2628 (class 0 OID 24655)
+-- Dependencies: 223
+-- Data for Name: _FolderToUser; Type: TABLE DATA; Schema: public; Owner: default
+--
+
+COPY public."_FolderToUser" ("A", "B") FROM stdin;
+clleuvpbn0000l5085psb6iz4	clldrj90t0002ml08rnvabo89
+clleuvpbn0000l5085psb6iz4	clldpr18w00019gd8zo6jiizb
+clleuvpbn0000l5085psb6iz4	clldrjw1n0002lb08bdzng9ga
+cllf8559z0000lb088ss5bhly	clldrjw1n0002lb08bdzng9ga
+cllf8559z0000lb088ss5bhly	clldrj90t0002ml08rnvabo89
+clmadxr0r0000l8085lsocoxc	clldrj90t0002ml08rnvabo89
+clmeko7us0000m6084u7y5efs	clldrjw1n0002lb08bdzng9ga
+clmeko7us0000m6084u7y5efs	clm7vl39d0000lc08n3hi8m7t
+clmf3ug3k0000lb085wfpieai	clldpr18w00019gd8zo6jiizb
+clmt7ycn50000mp08nr0mumo7	clmt178mu0000mt08y3ru283t
+clleuvpbn0000l5085psb6iz4	clmt178mu0000mt08y3ru283t
+clo5vmigw0001k408yb2zrqxq	clo3aznzg0000me0852abnf7w
+clo8dm2yb0000js09gk1uia6h	clo5wd4cy0001mi08480c1lf2
+clo8dm2yb0000js09gk1uia6h	clo5wf4dp0005mi08bmwuoxcu
+clo8dm2yb0000js09gk1uia6h	clo5wg26d0009mi08ib4l4k0v
+clo8dohwl0000la08ib4crne1	clo5whasd000bmi08u9cm7mib
+clo8dohwl0000la08ib4crne1	clo5wfos70007mi08v7lb9w8g
+clo8dohwl0000la08ib4crne1	clo5wfvzw0008mi088vj4gxdb
+clo8dohwl0000la08ib4crne1	clo5wcokk0000mi087iu1iub4
+clowool2h0000l808s97ds4zv	clldpr18w00019gd8zo6jiizb
+clrep7heo0000jp08482my98d	clreo46ni0000jz08bp4rwp2j
+clrep7m4v0002jz089fmm9qbo	clmrpxxvh000544aexo3ihmtc
+clrep7pkv0001jp084i0ekzwm	clmrpxxvh000544aexo3ihmtc
+clrep7qrj0001l608nlwhbz04	clmrpxxvh000544aexo3ihmtc
+clrep7heo0000jp08482my98d	clmrpxxvh000544aexo3ihmtc
+clrewxzh00000l8080i9gz2o2	clmhezyxt000397aeagzgpy1w
+\.
+
+
+--
+-- TOC entry 2441 (class 2606 OID 24591)
+-- Name: Account Account_pkey; Type: CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."Account"
+    ADD CONSTRAINT "Account_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2458 (class 2606 OID 24641)
+-- Name: Bookmark Bookmark_pkey; Type: CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."Bookmark"
+    ADD CONSTRAINT "Bookmark_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2456 (class 2606 OID 24633)
+-- Name: Category Category_pkey; Type: CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."Category"
+    ADD CONSTRAINT "Category_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2450 (class 2606 OID 24613)
+-- Name: Domain Domain_pkey; Type: CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."Domain"
+    ADD CONSTRAINT "Domain_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2460 (class 2606 OID 24649)
+-- Name: Folder Folder_pkey; Type: CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."Folder"
+    ADD CONSTRAINT "Folder_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2444 (class 2606 OID 24598)
+-- Name: Session Session_pkey; Type: CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."Session"
+    ADD CONSTRAINT "Session_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2454 (class 2606 OID 24624)
+-- Name: User User_pkey; Type: CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."User"
+    ADD CONSTRAINT "User_pkey" PRIMARY KEY (id);
+
+
+--
+-- TOC entry 2442 (class 1259 OID 24660)
+-- Name: Account_provider_providerAccountId_key; Type: INDEX; Schema: public; Owner: default
+--
+
+CREATE UNIQUE INDEX "Account_provider_providerAccountId_key" ON public."Account" USING btree (provider, "providerAccountId");
+
+
+--
+-- TOC entry 2448 (class 1259 OID 24664)
+-- Name: Domain_name_key; Type: INDEX; Schema: public; Owner: default
+--
+
+CREATE UNIQUE INDEX "Domain_name_key" ON public."Domain" USING btree (name);
+
+
+--
+-- TOC entry 2451 (class 1259 OID 24665)
+-- Name: Domain_url_key; Type: INDEX; Schema: public; Owner: default
+--
+
+CREATE UNIQUE INDEX "Domain_url_key" ON public."Domain" USING btree (url);
+
+
+--
+-- TOC entry 2461 (class 1259 OID 24668)
+-- Name: Folder_url_key; Type: INDEX; Schema: public; Owner: default
+--
+
+CREATE UNIQUE INDEX "Folder_url_key" ON public."Folder" USING btree (url);
+
+
+--
+-- TOC entry 2445 (class 1259 OID 24661)
+-- Name: Session_sessionToken_key; Type: INDEX; Schema: public; Owner: default
+--
+
+CREATE UNIQUE INDEX "Session_sessionToken_key" ON public."Session" USING btree ("sessionToken");
+
+
+--
+-- TOC entry 2452 (class 1259 OID 24666)
+-- Name: User_email_key; Type: INDEX; Schema: public; Owner: default
+--
+
+CREATE UNIQUE INDEX "User_email_key" ON public."User" USING btree (email);
+
+
+--
+-- TOC entry 2446 (class 1259 OID 24663)
+-- Name: VerificationToken_identifier_token_key; Type: INDEX; Schema: public; Owner: default
+--
+
+CREATE UNIQUE INDEX "VerificationToken_identifier_token_key" ON public."VerificationToken" USING btree (identifier, token);
+
+
+--
+-- TOC entry 2447 (class 1259 OID 24662)
+-- Name: VerificationToken_token_key; Type: INDEX; Schema: public; Owner: default
+--
+
+CREATE UNIQUE INDEX "VerificationToken_token_key" ON public."VerificationToken" USING btree (token);
+
+
+--
+-- TOC entry 2462 (class 1259 OID 24669)
+-- Name: _BookmarkToFolder_AB_unique; Type: INDEX; Schema: public; Owner: default
+--
+
+CREATE UNIQUE INDEX "_BookmarkToFolder_AB_unique" ON public."_BookmarkToFolder" USING btree ("A", "B");
+
+
+--
+-- TOC entry 2463 (class 1259 OID 24670)
+-- Name: _BookmarkToFolder_B_index; Type: INDEX; Schema: public; Owner: default
+--
+
+CREATE INDEX "_BookmarkToFolder_B_index" ON public."_BookmarkToFolder" USING btree ("B");
+
+
+--
+-- TOC entry 2464 (class 1259 OID 24671)
+-- Name: _FolderToUser_AB_unique; Type: INDEX; Schema: public; Owner: default
+--
+
+CREATE UNIQUE INDEX "_FolderToUser_AB_unique" ON public."_FolderToUser" USING btree ("A", "B");
+
+
+--
+-- TOC entry 2465 (class 1259 OID 24672)
+-- Name: _FolderToUser_B_index; Type: INDEX; Schema: public; Owner: default
+--
+
+CREATE INDEX "_FolderToUser_B_index" ON public."_FolderToUser" USING btree ("B");
+
+
+--
+-- TOC entry 2466 (class 2606 OID 24673)
+-- Name: Account Account_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."Account"
+    ADD CONSTRAINT "Account_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2470 (class 2606 OID 24703)
+-- Name: Bookmark Bookmark_categoryId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."Bookmark"
+    ADD CONSTRAINT "Bookmark_categoryId_fkey" FOREIGN KEY ("categoryId") REFERENCES public."Category"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 2471 (class 2606 OID 24693)
+-- Name: Bookmark Bookmark_domainId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."Bookmark"
+    ADD CONSTRAINT "Bookmark_domainId_fkey" FOREIGN KEY ("domainId") REFERENCES public."Domain"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 2472 (class 2606 OID 24698)
+-- Name: Bookmark Bookmark_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."Bookmark"
+    ADD CONSTRAINT "Bookmark_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 2469 (class 2606 OID 24688)
+-- Name: Category Category_domainId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."Category"
+    ADD CONSTRAINT "Category_domainId_fkey" FOREIGN KEY ("domainId") REFERENCES public."Domain"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 2467 (class 2606 OID 24678)
+-- Name: Session Session_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."Session"
+    ADD CONSTRAINT "Session_userId_fkey" FOREIGN KEY ("userId") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2468 (class 2606 OID 24683)
+-- Name: User User_domainId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."User"
+    ADD CONSTRAINT "User_domainId_fkey" FOREIGN KEY ("domainId") REFERENCES public."Domain"(id) ON UPDATE CASCADE ON DELETE RESTRICT;
+
+
+--
+-- TOC entry 2473 (class 2606 OID 24708)
+-- Name: _BookmarkToFolder _BookmarkToFolder_A_fkey; Type: FK CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."_BookmarkToFolder"
+    ADD CONSTRAINT "_BookmarkToFolder_A_fkey" FOREIGN KEY ("A") REFERENCES public."Bookmark"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2474 (class 2606 OID 24713)
+-- Name: _BookmarkToFolder _BookmarkToFolder_B_fkey; Type: FK CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."_BookmarkToFolder"
+    ADD CONSTRAINT "_BookmarkToFolder_B_fkey" FOREIGN KEY ("B") REFERENCES public."Folder"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2475 (class 2606 OID 24718)
+-- Name: _FolderToUser _FolderToUser_A_fkey; Type: FK CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."_FolderToUser"
+    ADD CONSTRAINT "_FolderToUser_A_fkey" FOREIGN KEY ("A") REFERENCES public."Folder"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+--
+-- TOC entry 2476 (class 2606 OID 24723)
+-- Name: _FolderToUser _FolderToUser_B_fkey; Type: FK CONSTRAINT; Schema: public; Owner: default
+--
+
+ALTER TABLE ONLY public."_FolderToUser"
+    ADD CONSTRAINT "_FolderToUser_B_fkey" FOREIGN KEY ("B") REFERENCES public."User"(id) ON UPDATE CASCADE ON DELETE CASCADE;
+
+
+-- Completed on 2024-01-24 15:08:40 CET
+
+--
+-- PostgreSQL database dump complete
+--
+
