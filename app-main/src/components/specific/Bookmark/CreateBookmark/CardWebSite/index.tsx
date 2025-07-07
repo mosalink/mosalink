@@ -24,18 +24,24 @@ const CardWebSite = ({
 
   if (loading) {
     return (
-      <div className="flex gap-4 border rounded p-4 items-center h-32">
-        <Skeleton className="h-24 w-32 rounded object-cover" />
-        <div className="flex flex-col justify-between gap-4">
-          <Skeleton className="w-96 h-4">{title}</Skeleton>
-          <Skeleton className="w-96  h-3">{metaDescription}</Skeleton>
+      <div className="flex gap-4 border rounded p-4 items-start min-h-32">
+        <Skeleton className="h-12 w-16 md:h-24 md:w-32 rounded object-cover flex-shrink-0" />
+        <div className="flex flex-col gap-3 w-40 md:w-96">
+          <div className="space-y-1">
+            <Skeleton className="h-3 w-16" />
+            <Skeleton className="h-8 w-full" />
+          </div>
+          <div className="space-y-1">
+            <Skeleton className="h-3 w-24" />
+            <Skeleton className="h-12 w-full" />
+          </div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="flex gap-4 border rounded p-4 items-center h-32">
+    <div className="flex gap-4 border rounded p-4 items-start min-h-32">
       <Image
         onErrorCapture={() => setImageError(true)}
         src={imageError ? defaultImageBookmark : image ?? ""}
@@ -43,24 +49,37 @@ const CardWebSite = ({
         width={250}
         height={150}
         unoptimized
-        className="h-12 w-16 md:h-24 md:w-32 rounded object-cover"
+        className="h-12 w-16 md:h-24 md:w-32 rounded object-cover flex-shrink-0"
       />
 
-      <div className="flex flex-col justify-between gap-4">
-        <p
-          className="text-lg font-bold w-40 md:w-96 whitespace-nowrap text-ellipsis overflow-hidden"
-          contentEditable
-          onBlur={(e) => setTitle(e.target.innerText)}
-        >
-          {title}
-        </p>
-        <p
-          className="text-slate-500 w-40 md:w-96 whitespace-nowrap text-ellipsis overflow-hidden"
-          contentEditable
-          onBlur={(e) => setMetaDescription(e.target.innerText)}
-        >
-          {metaDescription}
-        </p>
+      <div className="flex flex-col gap-3 w-40 md:w-96">
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+            Titre
+          </label>
+          <p
+            className="text-lg font-bold leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded px-1 py-1 min-h-[2rem] break-words"
+            contentEditable
+            onBlur={(e) => setTitle(e.target.innerText)}
+            suppressContentEditableWarning={true}
+          >
+            {title}
+          </p>
+        </div>
+        
+        <div className="space-y-1">
+          <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">
+            Description
+          </label>
+          <p
+            className="text-slate-500 leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded px-1 py-1 min-h-[3rem] break-words"
+            contentEditable
+            onBlur={(e) => setMetaDescription(e.target.innerText)}
+            suppressContentEditableWarning={true}
+          >
+            {metaDescription}
+          </p>
+        </div>
       </div>
     </div>
   );

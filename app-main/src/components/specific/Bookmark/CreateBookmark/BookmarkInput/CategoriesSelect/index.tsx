@@ -1,14 +1,8 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useQueryCategoriesDomain } from "@/hooks/useCategory";
 import { Dispatch, SetStateAction } from "react";
 import { useSession } from "next-auth/react";
 import { useParams } from "next/navigation";
+import { useQueryCategoriesDomain } from "@/hooks/useCategory";
+import { CategorySelectCombobox } from "@/components/ui/category-select-combobox";
 
 interface Props {
   setCategoryId: Dispatch<SetStateAction<string | undefined>>;
@@ -21,25 +15,16 @@ const CategoriesSelect = ({ setCategoryId, categoryId }: Props) => {
   
   const domainUrl = (params?.domain as string) || session?.user?.domainUrl || '';
   
-  const { data } = useQueryCategoriesDomain(domainUrl);
+  const { data: categories = [] } = useQueryCategoriesDomain(domainUrl);
 
   return (
-    <Select
-      onValueChange={(value) => setCategoryId(value)}
-      defaultValue={categoryId}
-    >
-      <SelectTrigger className="bg-slate-100">
-        <SelectValue placeholder="Choisir une catégorie" />
-      </SelectTrigger>
-      <SelectContent>
-        {data &&
-          data.map((category) => (
-            <SelectItem value={category.id} key={category.id}>
-              {category.name}
-            </SelectItem>
-          ))}
-      </SelectContent>
-    </Select>
+    <CategorySelectCombobox
+      categories={categories}
+      selectedCategoryId={categoryId}
+      onCategorySelect={setCategoryId}
+      placeholder="Choisir une catégorie..."
+      className="w-full"
+    />
   );
 };
 

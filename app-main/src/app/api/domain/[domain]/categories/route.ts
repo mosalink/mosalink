@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import supabase from "../../../../../../lib/supabase";
+import { supabaseAdmin } from "../../../../../../lib/supabase";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../auth/[...nextauth]/route";
 
@@ -14,7 +14,7 @@ export async function GET(
   }
 
   try {
-    const { data: domain, error: domainError } = await supabase
+    const { data: domain, error: domainError } = await supabaseAdmin
       .from('Domain')
       .select('id')
       .eq('url', params.domain)
@@ -25,7 +25,7 @@ export async function GET(
       return NextResponse.json({ error: "Domaine non trouvé" }, { status: 404 });
     }
 
-    const { data: categories, error: categoriesError } = await supabase
+    const { data: categories, error: categoriesError } = await supabaseAdmin
       .from('Category')
       .select('*')
       .eq('domainId', domain.id)

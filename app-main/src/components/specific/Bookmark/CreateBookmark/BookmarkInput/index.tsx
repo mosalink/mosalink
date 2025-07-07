@@ -106,7 +106,7 @@ const BookmarkInput = ({ url, setUrl }: Props) => {
         setMetaDescription={setMetaDescription}
       />
 
-      <CategoriesSelect setCategoryId={setCategoryId} />
+      <CategoriesSelect setCategoryId={setCategoryId} categoryId={categoryId} />
       {categoryMessage && !categoryId && (
         <p className="text-sm text-red-500">{categoryMessage}</p>
       )}

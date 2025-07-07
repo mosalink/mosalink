@@ -40,7 +40,7 @@ const TagsInput = ({ tags, setTags }: Props) => {
   );
 
   return (
-    <div className="flex w-full md:w-96 flex-wrap gap-2 items-center border rounded-sm p-2">
+    <div className="flex w-60 md:w-[512px] flex-wrap gap-2 items-center border rounded-sm p-2">
       {tags.length > 0 &&
         tags.map((tag) => {
           return (
