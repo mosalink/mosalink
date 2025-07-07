@@ -1,7 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/route";
 import { NextResponse } from "next/server";
-import prisma from "../../../../../lib/prisma";
+import { supabaseAdmin } from "../../../../../lib/supabase";
 
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
@@ -22,20 +22,34 @@ export async function POST(req: Request) {
     });
   }
 
-  const bookmark = await prisma.folder.update({
-    where: {
-      id: data.folderId,
-    },
-    data: {
-      bookmarks: {
-        connect: {
-          id: data.bookmarkId,
-        },
-      },
-    },
-  });
+  const { data: existingRelation } = await supabaseAdmin
+    .from('FolderBookmark')
+    .select('*')
+    .eq('folderId', data.folderId)
+    .eq('bookmarkId', data.bookmarkId)
+    .single();
 
-  return NextResponse.json(bookmark);
+  if (existingRelation) {
+    return NextResponse.json({
+      message: "Ce bookmark est déjà dans ce dossier",
+      status: 400,
+    });
+  }
+
+  const { data: relation, error } = await supabaseAdmin
+    .from('FolderBookmark')
+    .insert({
+      folderId: data.folderId,
+      bookmarkId: data.bookmarkId
+    })
+    .select()
+    .single();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json(relation);
 }
 
 export async function DELETE(req: Request) {
@@ -57,18 +71,15 @@ export async function DELETE(req: Request) {
     });
   }
 
-  const bookmark = await prisma.folder.update({
-    where: {
-      id: data.folderId,
-    },
-    data: {
-      bookmarks: {
-        disconnect: {
-          id: data.bookmarkId,
-        },
-      },
-    },
-  });
+  const { error } = await supabaseAdmin
+    .from('FolderBookmark')
+    .delete()
+    .eq('folderId', data.folderId)
+    .eq('bookmarkId', data.bookmarkId);
 
-  return NextResponse.json(bookmark);
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ message: "Bookmark supprimé du dossier avec succès" });
 }

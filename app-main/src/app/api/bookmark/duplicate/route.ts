@@ -1,7 +1,7 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import prisma from "../../../../../lib/prisma";
+import { supabaseAdmin } from "../../../../../lib/supabase";
 
 export async function POST(req: Request) {
   try {
@@ -23,43 +23,40 @@ export async function POST(req: Request) {
       });
     }
 
-    const oldBookmark = await prisma.bookmark.findUnique({
-      where: {
-        id: data.bookmarkId,
-      },
-    });
+    const { data: oldBookmark, error: fetchError } = await supabaseAdmin
+      .from('Bookmark')
+      .select('*')
+      .eq('id', data.bookmarkId)
+      .single();
 
-    if (!oldBookmark) {
+    if (fetchError || !oldBookmark) {
       return NextResponse.json({
         message: "Bookmark introuvable",
         status: 404,
       });
     }
 
-    const newBookmark = await prisma.bookmark.create({
-      data: {
+    const { data: newBookmark, error: createError } = await supabaseAdmin
+      .from('Bookmark')
+      .insert({
         title: oldBookmark.title,
         url: oldBookmark.url,
         description: oldBookmark.description,
         tags: oldBookmark.tags,
-        user: {
-          connect: {
-            id: session.user.id,
-          },
-        },
-        category: {
-          connect: {
-            id: oldBookmark.categoryId,
-          },
-        },
-        domain: {
-          connect: {
-            id: session.user.domainId,
-          },
-        },
+        userId: session.user.id,
+        categoryId: oldBookmark.categoryId,
+        domainId: session.user.domainId,
         image: oldBookmark.image,
-      },
-    });
+      })
+      .select()
+      .single();
+
+    if (createError) {
+      return NextResponse.json({
+        message: "Erreur lors de la duplication du bookmark",
+        status: 500,
+      });
+    }
 
     return NextResponse.json(newBookmark);
   } catch (error) {

@@ -2,7 +2,7 @@ import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 import { isAdminDomain } from "@/utils/roles/utils";
 import { authOptions } from "../../auth/[...nextauth]/route";
-import prisma from "../../../../../lib/prisma";
+import { supabaseAdmin } from "../../../../../lib/supabase";
 
 export async function DELETE(
   req: Request,
@@ -17,19 +17,27 @@ export async function DELETE(
     });
   }
 
-  const deleteBookmarks = await prisma.bookmark.deleteMany({
-    where: {
-      categoryId: params.id,
-    },
-  });
+  const { error: deleteBookmarksError } = await supabaseAdmin
+    .from('Bookmark')
+    .delete()
+    .eq('categoryId', params.id);
 
-  const deleteCategory = await prisma.category.delete({
-    where: {
-      id: params.id,
-    },
-  });
+  if (deleteBookmarksError) {
+    return NextResponse.json({ error: deleteBookmarksError.message }, { status: 500 });
+  }
 
-  return NextResponse.json({ deleteBookmarks, deleteCategory });
+  const { data: deletedCategory, error: deleteCategoryError } = await supabaseAdmin
+    .from('Category')
+    .delete()
+    .eq('id', params.id)
+    .select()
+    .single();
+
+  if (deleteCategoryError) {
+    return NextResponse.json({ error: deleteCategoryError.message }, { status: 500 });
+  }
+
+  return NextResponse.json({ deletedCategory });
 }
 
 export async function PUT(
@@ -51,15 +59,19 @@ export async function PUT(
     return NextResponse.error;
   }
 
-  const category = await prisma.category.update({
-    where: {
-      id: params.id,
-    },
-    data: {
+  const { data: category, error } = await supabaseAdmin
+    .from('Category')
+    .update({
       name: data.name,
       url: data.url,
-    },
-  });
+    })
+    .eq('id', params.id)
+    .select()
+    .single();
+
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
 
   console.log(category);
 

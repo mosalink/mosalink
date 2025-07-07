@@ -1,5 +1,5 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import prisma from "../../../../../../lib/prisma";
+import { supabaseAdmin } from "../../../../../../lib/supabase";
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
 
@@ -7,35 +7,24 @@ export async function GET(
   req: Request,
   { params }: { params: { id: string } }
 ) {
-  const bookmark = await prisma.bookmark.findMany({
-    where: {
-      userId: params.id,
-    },
-    select: {
-      id: true,
-      url: true,
-      title: true,
-      description: true,
-      image: true,
-      tags: true,
-      category: {
-        select: {
-          name: true,
-          id: true,
-          url: true,
-        },
-      },
-      user: {
-        select: {
-          id: true,
-          email: true,
-        },
-      },
-    },
-    orderBy: {
-      creationDate: "desc",
-    },
-  });
+  const { data: bookmarks, error } = await supabaseAdmin
+    .from('Bookmark')
+    .select(`
+      id,
+      url,
+      title,
+      description,
+      image,
+      tags,
+      category:Category(name, id, url),
+      user:User(id, email)
+    `)
+    .eq('userId', params.id)
+    .order('creationDate', { ascending: false });
 
-  return NextResponse.json(bookmark);
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json(bookmarks);
 }

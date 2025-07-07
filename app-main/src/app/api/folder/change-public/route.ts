@@ -1,6 +1,6 @@
 import { getServerSession } from "next-auth";
 import { NextResponse } from "next/server";
-import prisma from "../../../../../lib/prisma";
+import { supabaseAdmin } from "../../../../../lib/supabase";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function PUT(req: Request) {
@@ -22,14 +22,18 @@ export async function PUT(req: Request) {
     });
   }
 
-  const bookmark = await prisma.folder.update({
-    where: {
-      id: data.id,
-    },
-    data: {
+  const { data: folder, error } = await supabaseAdmin
+    .from('Folder')
+    .update({
       isPublish: data.isPublish,
-    },
-  });
+    })
+    .eq('id', data.id)
+    .select()
+    .single();
 
-  return NextResponse.json(bookmark);
+  if (error) {
+    return NextResponse.json({ error: error.message }, { status: 500 });
+  }
+
+  return NextResponse.json(folder);
 }
