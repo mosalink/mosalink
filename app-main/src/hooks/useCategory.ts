@@ -1,5 +1,5 @@
 import { routeIndexFront } from "@/utils/routes/routesFront";
-import { Category } from "@prisma/client";
+import { Category } from "../../lib/types";
 import { useQuery } from "@tanstack/react-query";
 
 const fetchCategoriesDomain = async (domain: string): Promise<Category[]> => {

@@ -5,7 +5,7 @@ import HeaderDesktop from "./HeaderDesktop";
 import HeaderMobile from "./HeaderMobile";
 import { useQueryCategoriesDomain } from "@/hooks/useCategory";
 import { useParams } from "next/navigation";
-import { Domain } from "@prisma/client";
+import { Domain } from "../../../../lib/types";
 
 interface Props {
   currentDomain?: Domain;

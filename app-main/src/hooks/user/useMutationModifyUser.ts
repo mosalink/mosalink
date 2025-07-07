@@ -1,7 +1,7 @@
 import { useToast } from "@/components/ui/use-toast";
 import { routeIndexFront } from "@/utils/routes/routesFront";
-import { Bookmark, Category, Role } from "@prisma/client";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Bookmark, Category, Role } from "../../../lib/types";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 interface QueryModifyUser {
   email: string;

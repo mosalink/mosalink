@@ -18,7 +18,7 @@ import { Button } from "@/components/ui/button";
 import { AlignJustify, Plus } from "lucide-react";
 import UserNav from "../UserNav";
 import { usePathname, useRouter } from "next/navigation";
-import { Category } from "@prisma/client";
+import { Category } from "../../../../../lib/types";
 import { useEffect, useState } from "react";
 
 interface Props {

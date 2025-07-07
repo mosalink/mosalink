@@ -1,5 +1,5 @@
 import { routeIndexFront } from "@/utils/routes/routesFront";
-import { Bookmark } from "@prisma/client";
+import { Bookmark } from "../../../lib/types";
 import { useQuery } from "@tanstack/react-query";
 
 export interface BookmarkData {

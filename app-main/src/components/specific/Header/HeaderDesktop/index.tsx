@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Plus } from "lucide-react";
 import UserNav from "../UserNav";
 import { useRouter } from "next/navigation";
-import { Category } from "@prisma/client";
+import { Category } from "../../../../../lib/types";
 
 interface Props {
   domainUrl: string;

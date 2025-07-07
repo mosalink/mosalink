@@ -1,5 +1,5 @@
 import { routeIndexFront } from "@/utils/routes/routesFront";
-import { Bookmark, Category, Role } from "@prisma/client";
+import { Bookmark, Category, Role } from "../../../lib/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface QueryCreateUser {

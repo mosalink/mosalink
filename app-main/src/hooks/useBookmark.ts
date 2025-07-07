@@ -1,6 +1,6 @@
 import { useToast } from "@/components/ui/use-toast";
 import { routeIndexFront } from "@/utils/routes/routesFront";
-import { Bookmark, Category } from "@prisma/client";
+import { Bookmark, Category } from "../../lib/types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface QueryPostBookmark {
