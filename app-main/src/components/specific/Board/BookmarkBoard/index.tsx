@@ -22,9 +22,9 @@ const BookmarkBoard = ({ bookmarks, isLoading, folderId, isPublic }: Props) => {
 
   if (isLoading) {
     return (
-      <div className="w-full grid gap-y-10 justify-items-center  md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-        <Skeleton className="flex justify-center items-center h-80 w-[300px]" />
-        <Skeleton className="flex justify-center items-center h-80 w-[300px]" />
+      <div className="w-full max-w-7xl mx-auto grid gap-x-8 gap-y-8 justify-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 px-6">
+        <Skeleton className="flex justify-center items-center h-80 w-full max-w-[320px]" />
+        <Skeleton className="flex justify-center items-center h-80 w-full max-w-[320px]" />
       </div>
     );
   }
@@ -45,7 +45,7 @@ const BookmarkBoard = ({ bookmarks, isLoading, folderId, isPublic }: Props) => {
   }
 
   return (
-    <div className="w-full grid gap-6 justify-items-center md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-start">
+    <div className="w-full max-w-7xl mx-auto grid gap-x-20 gap-y-8 justify-center grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 items-start px-6">
       {bookmarks?.map((bookmark) => (
         <BookmarkCard
           key={bookmark.id}

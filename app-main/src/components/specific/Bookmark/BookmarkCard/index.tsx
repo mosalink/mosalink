@@ -9,6 +9,7 @@ import {
 } from "@/utils/routes/routesFront";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useSession } from "next-auth/react";
 import { BookmarkData } from "@/hooks/bookmark/useQueryBookmarksUserSupabase";
 import DropdownBookmarkCard from "./DropdownBookmarkCard";
@@ -29,6 +30,8 @@ const BookmarkCard = ({ bookmark, folderId, isPublic }: Props) => {
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
 
   const isDescriptionLong = bookmark.description.length > 120;
+  const isTitleLong = bookmark.title.length > 60;
+  const hasExpandableContent = isDescriptionLong || isTitleLong;
 
   const handleCardClick = () => {
     window.open(bookmark.url, '_blank');
@@ -41,10 +44,13 @@ const BookmarkCard = ({ bookmark, folderId, isPublic }: Props) => {
   };
 
   return (
-    <div 
-      className="group inline-flex flex-col p-4 gap-3 border rounded shadow w-[300px] min-h-[470px] hover:shadow-lg transition-all duration-300 cursor-pointer"
-      onClick={handleCardClick}
-    >
+    <TooltipProvider>
+      <Tooltip delayDuration={500}>
+        <TooltipTrigger asChild>
+          <div 
+            className="group flex flex-col p-4 gap-3 border border-gray-200 rounded-xl shadow-sm w-full min-w-[310px] max-w-[320px] min-h-[470px] hover:shadow-lg hover:border-blue-300 transition-all duration-300 cursor-pointer bg-white mx-auto"
+            onClick={handleCardClick}
+          >
       <Image
         onErrorCapture={() => setImageError(true)}
         src={imageError ? defaultImageBookmark : bookmark.image ?? ""}
@@ -52,18 +58,20 @@ const BookmarkCard = ({ bookmark, folderId, isPublic }: Props) => {
         width={250}
         height={150}
         unoptimized
-        className="w-full h-[150px] rounded object-cover flex-shrink-0"
+        className="w-full h-[150px] rounded-lg object-cover flex-shrink-0 group-hover:scale-105 transition-transform duration-300"
       />
       
       <div className="flex justify-between items-start gap-2 flex-shrink-0">
         <h3
-          className="font-bold text-lg leading-6 w-[220px] group-hover:underline"
-          style={{ 
+          className={`font-bold text-lg leading-6 w-[220px] group-hover:underline cursor-pointer transition-all duration-300 ${
+            isDescriptionExpanded ? '' : 'line-clamp-2'
+          }`}
+          style={!isDescriptionExpanded ? { 
             display: '-webkit-box',
             WebkitLineClamp: 2,
             WebkitBoxOrient: 'vertical',
             overflow: 'hidden'
-          }}
+          } : {}}
         >
           {bookmark.title}
         </h3>
@@ -94,7 +102,7 @@ const BookmarkCard = ({ bookmark, folderId, isPublic }: Props) => {
             {bookmark.description}
           </p>
           
-          {isDescriptionLong && (
+          {hasExpandableContent && (
             <Button
               variant="link"
               size="sm"
@@ -163,7 +171,13 @@ const BookmarkCard = ({ bookmark, folderId, isPublic }: Props) => {
       >
         {bookmark.user.email}
       </p>
-    </div>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="top" className="max-w-xs bg-gray-900 text-white text-sm p-2 rounded-md shadow-lg z-50">
+          <p>{bookmark.title}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
