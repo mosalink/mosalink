@@ -30,7 +30,7 @@ INSERT INTO "User" (
 ) VALUES (
     'superadmin_user_' || extract(epoch from now())::bigint,
     'Super Administrateur',
-    'superadmin@mosalink.com',
+    'mosalink.projet@gmail.com',
     'SUPER_ADMIN',
     false,
     (SELECT id FROM "Domain" WHERE name = 'super-admin' LIMIT 1),
