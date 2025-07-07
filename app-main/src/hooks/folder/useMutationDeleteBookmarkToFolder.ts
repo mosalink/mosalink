@@ -29,7 +29,7 @@ export function useMutationDeleteBookmarkToFolder() {
       return;
     } catch (error) {
       throw new Error(
-        "Une erreur est survenue lors de la suppression d'un bookmark dans un dossier."
+        "Une erreur est survenue lors de la suppression d'un bookmark dans un projet."
       );
     }
   };
@@ -40,13 +40,13 @@ export function useMutationDeleteBookmarkToFolder() {
         variant: "destructive",
         title: "Erreur",
         description:
-          "Une erreur est survenue lors de la suppression d'un bookmark dans un dossier.",
+          "Une erreur est survenue lors de la suppression d'un bookmark dans un projet.",
       });
     },
     onSuccess: () => {
       toast({
         title: "Félicitations",
-        description: "Le bookmark à bien été supprimé au dossier.",
+        description: "Le bookmark à bien été supprimé au projet.",
       });
       queryClient.refetchQueries([
         "foldersUser",

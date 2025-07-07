@@ -131,7 +131,7 @@ export const useBreadcrumbs = (options: UseBreadcrumbsOptions = {}) => {
 
         case 'folder':
           items.push({
-            label: "Dossiers",
+            label: "Projets",
             isCurrentPage: false
           })
           if (pathSegments[2] && folderName) {

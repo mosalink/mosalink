@@ -29,7 +29,7 @@ export function useMutationAddBookmarkToFolder() {
       return;
     } catch (error) {
       throw new Error(
-        "Une erreur est survenue lors de l'ajout d'un bookmark dans un dossier."
+        "Une erreur est survenue lors de l'ajout d'un bookmark dans un projet."
       );
     }
   };
@@ -40,13 +40,13 @@ export function useMutationAddBookmarkToFolder() {
         variant: "destructive",
         title: "Erreur",
         description:
-          "Une erreur est survenue lors de l'ajout d'un bookmark dans un dossier.",
+          "Une erreur est survenue lors de l'ajout d'un bookmark dans un projet.",
       });
     },
     onSuccess: () => {
       toast({
         title: "Félicitations",
-        description: "Le bookmark à bien été ajouté au dossier.",
+        description: "Le bookmark à bien été ajouté au projet.",
       });
       queryClient.refetchQueries([
         "foldersUser",

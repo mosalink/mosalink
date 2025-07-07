@@ -31,7 +31,7 @@ export function useMutationChangePublicFolder() {
       return response;
     } catch (error) {
       throw new Error(
-        "Une erreur est survenue lors de la modification du dossier."
+        "Une erreur est survenue lors de la modification du projet."
       );
     }
   };
@@ -42,13 +42,13 @@ export function useMutationChangePublicFolder() {
         variant: "destructive",
         title: "Erreur",
         description:
-          "Une erreur est survenue lors de la modification du dossier.",
+          "Une erreur est survenue lors de la modification du projet.",
       });
     },
     onSuccess: () => {
       toast({
         title: "Félicitations",
-        description: "Le dossier a bien été modifié.",
+        description: "Le projet a bien été modifié.",
       });
       queryClient.refetchQueries(["foldersUser"]);
     },

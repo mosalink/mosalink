@@ -31,7 +31,7 @@ export async function POST(req: Request) {
 
   if (existingRelation) {
     return NextResponse.json({
-      message: "Ce bookmark est déjà dans ce dossier",
+      message: "Ce bookmark est déjà dans ce projet",
       status: 400,
     });
   }
@@ -81,5 +81,5 @@ export async function DELETE(req: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  return NextResponse.json({ message: "Bookmark supprimé du dossier avec succès" });
+  return NextResponse.json({ message: "Bookmark supprimé du projet avec succès" });
 }
