@@ -5,6 +5,7 @@ import Header from "@/components/specific/Header";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import Footer from "@/components/specific/Footer";
 import { supabaseAdmin } from "../../../lib/supabase";
+import { DynamicBreadcrumb } from "@/components/specific/Breadcrumb/DynamicBreadcrumb";
 
 export interface ParamsDomainRoute {
   params: {
@@ -49,6 +50,7 @@ export default async function Layout({ children, params }: Props) {
   return (
     <div>
       <Header currentDomain={requestedDomain} />
+      <DynamicBreadcrumb domain={params.domain} />
       {children}
       <Footer />
     </div>

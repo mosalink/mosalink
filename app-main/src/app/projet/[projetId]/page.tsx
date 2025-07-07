@@ -5,6 +5,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useQueryBookmarksFolderSupabase } from "@/hooks/bookmark/useQueryBookmarksFolderSupabase";
 import { routeIndexFront } from "@/utils/routes/routesFront";
 import { redirect } from "next/navigation";
+import { BreadcrumbWrapper } from "@/components/specific/Breadcrumb/BreadcrumbWrapper";
 
 interface Props {
   params: {
@@ -30,6 +31,7 @@ const Page = ({ params }: Props) => {
           Présenté par {process.env.NEXT_PUBLIC_APP_NAME}
         </p>
       </div>
+      <BreadcrumbWrapper projectName={folder?.name} />
       <FolderBoard id={params.projetId} isFolderPublic={true} />
     </div>
   );
