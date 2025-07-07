@@ -30,7 +30,7 @@ export async function DELETE(
 
   if (!session) {
     return NextResponse.json({
-      message: "Vous devez être connecté pour accéder à cette page",
+      message: "Vous devez être connecté pour accéder à cette page",
       status: 403,
     });
   }
@@ -78,7 +78,7 @@ export async function PUT(
 
   if (!session) {
     return NextResponse.json({
-      message: "Vous devez être connecté pour accéder à cette page",
+      message: "Vous devez être connecté pour accéder à cette page",
       status: 403,
     });
   }
