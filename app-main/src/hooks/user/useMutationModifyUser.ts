@@ -35,7 +35,8 @@ export function useMutationModifyUser() {
     }
   };
 
-  const mutation = useMutation(modifyUserMutation, {
+  const mutation = useMutation({
+    mutationFn: modifyUserMutation,
     onError: () => {
       toast({
         variant: "destructive",
@@ -49,7 +50,7 @@ export function useMutationModifyUser() {
         title: "Félicitations",
         description: "L'utilisateur a bien été modifié.",
       });
-      queryClient.refetchQueries(["usersDomain"]);
+      queryClient.invalidateQueries({ queryKey: ["usersDomain"] });
     },
   });
 

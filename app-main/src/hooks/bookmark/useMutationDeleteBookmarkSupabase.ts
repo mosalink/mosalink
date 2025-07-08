@@ -45,7 +45,9 @@ export function useMutationDeleteBookmarkSupabase() {
         title: "Félicitations",
         description: "Le bookmark a bien été supprimé.",
       });
-      queryClient.refetchQueries(["bookmarksDomain"]);
+      queryClient.invalidateQueries({ queryKey: ["bookmarksDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksUserSupabase"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksFolderSupabase"] });
     },
   });
 

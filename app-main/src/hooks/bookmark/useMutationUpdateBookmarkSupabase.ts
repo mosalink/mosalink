@@ -63,7 +63,9 @@ export function useMutationUpdateBookmarkSupabase() {
         title: "Félicitations",
         description: "Le bookmark a bien été mis à jour.",
       });
-      queryClient.refetchQueries(["bookmarksDomain"]);
+      queryClient.invalidateQueries({ queryKey: ["bookmarksDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksUserSupabase"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksFolderSupabase"] });
     },
   });
 

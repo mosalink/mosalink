@@ -23,7 +23,8 @@ export function useMutationDeleteUser() {
     }
   };
 
-  const mutation = useMutation(deleteUserMutation, {
+  const mutation = useMutation({
+    mutationFn: deleteUserMutation,
     onError: () => {
       toast({
         variant: "destructive",
@@ -37,7 +38,7 @@ export function useMutationDeleteUser() {
         title: "Félicitations",
         description: "L'utilisateur a bien été supprimé.",
       });
-      queryClient.refetchQueries(["usersDomain"]);
+      queryClient.invalidateQueries({ queryKey: ["usersDomain"] });
     },
   });
 

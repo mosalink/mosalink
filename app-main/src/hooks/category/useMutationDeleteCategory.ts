@@ -26,7 +26,8 @@ export function useMutationDeleteCategory() {
     }
   };
 
-  const mutation = useMutation(deleteCategoryMutation, {
+  const mutation = useMutation({
+    mutationFn: deleteCategoryMutation,
     onError: () => {
       toast({
         variant: "destructive",
@@ -40,7 +41,7 @@ export function useMutationDeleteCategory() {
         title: "Félicitations",
         description: "La Catégorie a bien été supprimé.",
       });
-      queryClient.refetchQueries(["categoriesAdmin"]);
+      queryClient.invalidateQueries({ queryKey: ["categoriesAdmin"] });
     },
   });
 

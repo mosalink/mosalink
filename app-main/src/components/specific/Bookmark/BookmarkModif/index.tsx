@@ -7,7 +7,7 @@ import {
 import CardWebSite from "../CreateBookmark/CardWebSite";
 import CategoriesSelect from "../CreateBookmark/BookmarkInput/CategoriesSelect";
 import TagsInput from "../CreateBookmark/BookmarkInput/TagsInput";
-import { Dispatch, SetStateAction, useCallback, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { useMutationUpdateBookmarkSupabase } from "@/hooks/bookmark/useMutationUpdateBookmarkSupabase";
 import { BookmarkData } from "@/hooks/bookmark/useQueryBookmarksUserSupabase";
@@ -40,8 +40,6 @@ const BookmarkModif = ({ bookmark, setOpenDialog }: Props) => {
       image,
       categoryId: categoryId ?? "",
     });
-
-    setOpenDialog(false);
   }, [
     bookmark.id,
     bookmark.url,
@@ -51,8 +49,13 @@ const BookmarkModif = ({ bookmark, setOpenDialog }: Props) => {
     mutation,
     tags,
     title,
-    setOpenDialog,
   ]);
+
+  useEffect(() => {
+    if (mutation.isSuccess) {
+      setOpenDialog(false);
+    }
+  }, [mutation.isSuccess, setOpenDialog]);
 
   return (
     <>
@@ -77,11 +80,10 @@ const BookmarkModif = ({ bookmark, setOpenDialog }: Props) => {
         </div>
         <DialogFooter>
           <Button
-            onClick={(e) => {
-              handleModifyBookmark();
-            }}
+            onClick={handleModifyBookmark}
+            disabled={mutation.isLoading}
           >
-            Modifier
+            {mutation.isLoading ? "Modification..." : "Modifier"}
           </Button>
         </DialogFooter>
       </DialogDescription>

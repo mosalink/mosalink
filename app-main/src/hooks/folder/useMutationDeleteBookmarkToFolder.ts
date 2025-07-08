@@ -34,7 +34,8 @@ export function useMutationDeleteBookmarkToFolder() {
     }
   };
 
-  const mutation = useMutation(deleteBookmarkToFolderMutation, {
+  const mutation = useMutation({
+    mutationFn: deleteBookmarkToFolderMutation,
     onError: () => {
       toast({
         variant: "destructive",
@@ -48,13 +49,13 @@ export function useMutationDeleteBookmarkToFolder() {
         title: "Félicitations",
         description: "Le bookmark à bien été supprimé au projet.",
       });
-      queryClient.refetchQueries([
-        "foldersUser",
-        "bookmarksDomain",
-        "bookmarksCategoryDomain",
-        "bookmarksTagsDomain",
-        "bookmarksUserDomain",
-      ]);
+      queryClient.invalidateQueries({ queryKey: ["foldersUser"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksCategoryDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksTagsDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksUserDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksUserSupabase"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksFolderSupabase"] });
     },
   });
 

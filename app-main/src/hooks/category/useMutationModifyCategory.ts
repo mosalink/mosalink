@@ -36,7 +36,8 @@ export function useMutationModifyCategory() {
     }
   };
 
-  const mutation = useMutation(modifyCategoryMutation, {
+  const mutation = useMutation({
+    mutationFn: modifyCategoryMutation,
     onError: () => {
       toast({
         variant: "destructive",
@@ -50,7 +51,7 @@ export function useMutationModifyCategory() {
         title: "Félicitations",
         description: "La Catégorie a bien été modifié.",
       });
-      queryClient.refetchQueries(["categoriesAdmin"]);
+      queryClient.invalidateQueries({ queryKey: ["categoriesAdmin"] });
     },
   });
 

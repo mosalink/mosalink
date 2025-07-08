@@ -31,7 +31,8 @@ export function useMutationCreateUser() {
     }
   };
 
-  const mutation = useMutation(createPostMutation, {
+  const mutation = useMutation({
+    mutationFn: createPostMutation,
     onSuccess: () => {
       queryClient.invalidateQueries(["usersDomain"]);
     },

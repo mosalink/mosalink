@@ -35,7 +35,8 @@ export function useMutationDuplicateBookmark() {
       );
     }
   };
-  const mutation = useMutation(createDuplicateBookmarkMutation, {
+  const mutation = useMutation({
+    mutationFn: createDuplicateBookmarkMutation,
     onError: () => {
       toast({
         variant: "destructive",
@@ -49,7 +50,9 @@ export function useMutationDuplicateBookmark() {
         title: "Félicitations",
         description: "Le bookmark a bien été dupliqué.",
       });
-      queryClient.refetchQueries(["bookmarksDomain"]);
+      queryClient.invalidateQueries({ queryKey: ["bookmarksDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksUserSupabase"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksFolderSupabase"] });
     },
   });
 

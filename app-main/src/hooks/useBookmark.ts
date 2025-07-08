@@ -78,7 +78,8 @@ export function useMutationCreateBookmark() {
     }
   };
 
-  const mutation = useMutation(createPostMutation, {
+  const mutation = useMutation({
+    mutationFn: createPostMutation,
     onError: () => {
       toast({
         variant: "destructive",
@@ -91,7 +92,9 @@ export function useMutationCreateBookmark() {
         title: "Félicitations",
         description: "Le bookmark a bien été créé.",
       });
-      queryClient.refetchQueries(["bookmarksDomain"]);
+      queryClient.invalidateQueries({ queryKey: ["bookmarksDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksUserSupabase"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksFolderSupabase"] });
     },
   });
 
@@ -113,7 +116,8 @@ export function useMutationUpdateBookmark() {
     }
   };
 
-  const mutation = useMutation(updateBookmarkMutation, {
+  const mutation = useMutation({
+    mutationFn: updateBookmarkMutation,
     onError: () => {
       toast({
         variant: "destructive",
@@ -127,7 +131,9 @@ export function useMutationUpdateBookmark() {
         title: "Félicitations",
         description: "Le bookmark a bien été mis à jour.",
       });
-      queryClient.refetchQueries(["bookmarksDomain"]);
+      queryClient.invalidateQueries({ queryKey: ["bookmarksDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksUserSupabase"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksFolderSupabase"] });
     },
   });
 
@@ -149,7 +155,8 @@ export function useMutationDeleteBookmark() {
     }
   };
 
-  const mutation = useMutation(createPostMutation, {
+  const mutation = useMutation({
+    mutationFn: createPostMutation,
     onError: () => {
       toast({
         variant: "destructive",
@@ -163,7 +170,9 @@ export function useMutationDeleteBookmark() {
         title: "Félicitations",
         description: "Le bookmark a bien été supprimé.",
       });
-      queryClient.refetchQueries(["bookmarksDomain"]);
+      queryClient.invalidateQueries({ queryKey: ["bookmarksDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksUserSupabase"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksFolderSupabase"] });
     },
   });
 

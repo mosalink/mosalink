@@ -36,7 +36,8 @@ export function useMutationChangePublicFolder() {
     }
   };
 
-  const mutation = useMutation(changePublicFolderMutation, {
+  const mutation = useMutation({
+    mutationFn: changePublicFolderMutation,
     onError: () => {
       toast({
         variant: "destructive",
@@ -50,7 +51,7 @@ export function useMutationChangePublicFolder() {
         title: "Félicitations",
         description: "Le projet a bien été modifié.",
       });
-      queryClient.refetchQueries(["foldersUser"]);
+      queryClient.invalidateQueries({ queryKey: ["foldersUser"] });
     },
   });
 

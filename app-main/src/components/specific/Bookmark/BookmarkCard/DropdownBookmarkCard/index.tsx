@@ -13,7 +13,7 @@ import BookmarkModif from "../../BookmarkModif";
 import { useQueryFoldersUser } from "@/hooks/folder/useQueryFoldersUser";
 import { canModifBookmark } from "@/utils/roles/utils";
 import { useSession } from "next-auth/react";
-import { SetStateAction, useCallback, useMemo, useState } from "react";
+import { SetStateAction, useCallback, useEffect, useMemo, useState } from "react";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import {
   DropdownMenu,
@@ -40,17 +40,54 @@ const DropdownBookmarkCard = ({ bookmark, folderId }: Props) => {
 
   const [openDialog, setOpenDialog] = useState(false);
   const [contentDialog, setContentDialog] = useState("");
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const handleDuplicateBookmark = useCallback(() => {
+  const isAnyMutationLoading = 
+    deleteBookmarkMutation.isLoading || 
+    duplicateBookmarkMutation.isLoading || 
+    deleteBookmarkToFolderMutation.isLoading;
+
+  const handleDuplicateBookmark = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isAnyMutationLoading) return;
+    
     duplicateBookmarkMutation.mutate(bookmark.id);
-  }, [bookmark.id, duplicateBookmarkMutation]);
+  }, [bookmark.id, duplicateBookmarkMutation, isAnyMutationLoading]);
 
-  const handleDeleteBookmarkToFolder = useCallback(() => {
+  const handleDeleteBookmarkToFolder = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isAnyMutationLoading) return;
+    
     deleteBookmarkToFolderMutation.mutate({
       bookmarkId: bookmark.id,
       folderId: folderId ?? "",
     });
-  }, [bookmark.id, deleteBookmarkToFolderMutation, folderId]);
+  }, [bookmark.id, deleteBookmarkToFolderMutation, folderId, isAnyMutationLoading]);
+
+  const handleDeleteBookmark = useCallback((e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isAnyMutationLoading) return;
+    
+    if (bookmark.id) {
+      deleteBookmarkMutation.mutate(bookmark.id);
+    }
+  }, [bookmark.id, deleteBookmarkMutation, isAnyMutationLoading]);
+
+  const handleOpenDialog = useCallback((dialogType: string) => {
+    setContentDialog(dialogType);
+    setOpenDialog(true);
+    setDropdownOpen(false);
+  }, []);
+
+  const handleDialogChange = useCallback((open: boolean) => {
+    setOpenDialog(open);
+    if (!open) {
+      setContentDialog("");
+    }
+  }, []);
 
   const userModifContent = useMemo(() => {
     if (
@@ -71,7 +108,10 @@ const DropdownBookmarkCard = ({ bookmark, folderId }: Props) => {
     return (
       <>
         <DialogTrigger asChild>
-          <DropdownMenuItem onClick={() => setContentDialog("modif")}>
+          <DropdownMenuItem 
+            onClick={() => handleOpenDialog("modif")}
+            disabled={isAnyMutationLoading}
+          >
             <div className="flex gap-2">
               <Pencil className="w-4 h-4" />
               Modifier
@@ -79,7 +119,10 @@ const DropdownBookmarkCard = ({ bookmark, folderId }: Props) => {
           </DropdownMenuItem>
         </DialogTrigger>
         <DialogTrigger asChild>
-          <DropdownMenuItem onClick={() => setContentDialog("folder")}>
+          <DropdownMenuItem 
+            onClick={() => handleOpenDialog("folder")}
+            disabled={isAnyMutationLoading}
+          >
             <div className="flex gap-2">
               <Folder className="w-4 h-4" />
               Ajouter à un projet
@@ -87,20 +130,19 @@ const DropdownBookmarkCard = ({ bookmark, folderId }: Props) => {
           </DropdownMenuItem>
         </DialogTrigger>
         {folderId && (
-          <DropdownMenuItem onClick={() => handleDeleteBookmarkToFolder()}>
+          <DropdownMenuItem 
+            onClick={handleDeleteBookmarkToFolder}
+            disabled={isAnyMutationLoading}
+          >
             <div className="flex gap-2 items-center">
               <FolderX className="w-4 h-4" />
               Supprimer du projet
             </div>
           </DropdownMenuItem>
         )}
-        <DropdownMenuItem
-          onClick={(e) => {
-            if (bookmark.id) {
-              deleteBookmarkMutation.mutate(bookmark.id);
-            }
-            e.stopPropagation();
-          }}
+        <DropdownMenuItem 
+          onClick={handleDeleteBookmark}
+          disabled={isAnyMutationLoading}
         >
           <div className="flex gap-2">
             <Trash2 className="w-4 h-4" />
@@ -117,7 +159,9 @@ const DropdownBookmarkCard = ({ bookmark, folderId }: Props) => {
     bookmark.id,
     folderId,
     handleDeleteBookmarkToFolder,
-    deleteBookmarkMutation,
+    handleDeleteBookmark,
+    handleOpenDialog,
+    isAnyMutationLoading,
   ]);
 
   const otherUserContent = useMemo(() => {
@@ -125,18 +169,50 @@ const DropdownBookmarkCard = ({ bookmark, folderId }: Props) => {
       return null;
     }
     return (
-      <DropdownMenuItem onClick={handleDuplicateBookmark}>
+      <DropdownMenuItem 
+        onClick={handleDuplicateBookmark}
+        disabled={isAnyMutationLoading}
+      >
         <div className="flex gap-2">
           <Copy className="w-4 h-4" />
           Dupliquer
         </div>
       </DropdownMenuItem>
     );
-  }, [bookmark.user.id, handleDuplicateBookmark, session?.data?.user.id]);
+  }, [bookmark.user.id, handleDuplicateBookmark, session?.data?.user.id, isAnyMutationLoading]);
+
+  // Fermer automatiquement le dropdown quand une mutation réussit ou échoue
+  useEffect(() => {
+    if (
+      deleteBookmarkMutation.isSuccess ||
+      duplicateBookmarkMutation.isSuccess ||
+      deleteBookmarkToFolderMutation.isSuccess ||
+      deleteBookmarkMutation.isError ||
+      duplicateBookmarkMutation.isError ||
+      deleteBookmarkToFolderMutation.isError
+    ) {
+      setDropdownOpen(false);
+    }
+  }, [
+    deleteBookmarkMutation.isSuccess,
+    duplicateBookmarkMutation.isSuccess,
+    deleteBookmarkToFolderMutation.isSuccess,
+    deleteBookmarkMutation.isError,
+    duplicateBookmarkMutation.isError,
+    deleteBookmarkToFolderMutation.isError,
+  ]);
+
+  useEffect(() => {
+    if (dropdownOpen) {
+      deleteBookmarkMutation.reset();
+      duplicateBookmarkMutation.reset();
+      deleteBookmarkToFolderMutation.reset();
+    }
+  }, [dropdownOpen, deleteBookmarkMutation, duplicateBookmarkMutation, deleteBookmarkToFolderMutation]);
 
   return (
-    <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-      <DropdownMenu>
+    <Dialog open={openDialog} onOpenChange={handleDialogChange}>
+      <DropdownMenu open={dropdownOpen} onOpenChange={setDropdownOpen}>
         <DropdownMenuTrigger asChild>
           <Button variant="ghost" className="p-2">
             <MoreVertical className="h-5 w-5" />

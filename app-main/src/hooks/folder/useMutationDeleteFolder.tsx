@@ -45,7 +45,7 @@ export function useMutationDeleteFolder() {
         title: "Félicitations",
         description: "Le projet a bien été supprimé.",
       });
-      queryClient.refetchQueries(["foldersUser"]);
+      queryClient.invalidateQueries({ queryKey: ["foldersUser"] });
     },
   });
 

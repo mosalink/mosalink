@@ -9,7 +9,7 @@ import {
 } from "@/components/ui/dialog";
 import { useQueryFoldersUser } from "@/hooks/folder/useQueryFoldersUser";
 import { routeFolderFront } from "@/utils/routes/routesFront";
-import { Users, Crown, UserPlus } from "lucide-react";
+import { Users, Crown, UserPlus, ExternalLink } from "lucide-react";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { useCallback, useMemo } from "react";
@@ -86,17 +86,20 @@ const MyProjets = () => {
                     )}
                   </div>
                   <div className="flex-1">
-                    <DialogTrigger asChild>
-                      <Link
-                        href={routeFolderFront(
-                          sessionData?.user.domainUrl || "",
-                          folder.id
-                        )}
-                        className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors"
-                      >
-                        {folder.name}
-                      </Link>
-                    </DialogTrigger>
+                    <div className="flex items-center gap-2">
+                      <DialogTrigger asChild>
+                        <Link
+                          href={routeFolderFront(
+                            sessionData?.user.domainUrl || "",
+                            folder.id
+                          )}
+                          className="text-sm font-medium text-gray-900 hover:text-blue-600 transition-colors flex items-center gap-1 group"
+                        >
+                          {folder.name}
+                          <ExternalLink className="w-3 h-3 text-gray-400 group-hover:text-blue-600 transition-colors opacity-70" />
+                        </Link>
+                      </DialogTrigger>
+                    </div>
                     <p className={`text-xs ${
                       isOwner ? 'text-yellow-600' : 'text-blue-600'
                     }`}>

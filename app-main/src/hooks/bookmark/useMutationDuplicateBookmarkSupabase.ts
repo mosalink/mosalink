@@ -48,7 +48,9 @@ export function useMutationDuplicateBookmarkSupabase() {
         title: "Félicitations",
         description: "Le bookmark a bien été dupliqué.",
       });
-      queryClient.refetchQueries(["bookmarksDomain"]);
+      queryClient.invalidateQueries({ queryKey: ["bookmarksDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksUserSupabase"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksFolderSupabase"] });
     },
   });
 

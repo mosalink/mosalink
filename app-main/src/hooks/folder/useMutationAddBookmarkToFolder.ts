@@ -34,7 +34,8 @@ export function useMutationAddBookmarkToFolder() {
     }
   };
 
-  const mutation = useMutation(addBookmarkToFolderMutation, {
+  const mutation = useMutation({
+    mutationFn: addBookmarkToFolderMutation,
     onError: () => {
       toast({
         variant: "destructive",
@@ -48,13 +49,13 @@ export function useMutationAddBookmarkToFolder() {
         title: "Félicitations",
         description: "Le bookmark à bien été ajouté au projet.",
       });
-      queryClient.refetchQueries([
-        "foldersUser",
-        "bookmarksDomain",
-        "bookmarksCategoryDomain",
-        "bookmarksTagsDomain",
-        "bookmarksUserDomain",
-      ]);
+      queryClient.invalidateQueries({ queryKey: ["foldersUser"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksCategoryDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksTagsDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksUserDomain"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksUserSupabase"] });
+      queryClient.invalidateQueries({ queryKey: ["bookmarksFolderSupabase"] });
     },
   });
 
