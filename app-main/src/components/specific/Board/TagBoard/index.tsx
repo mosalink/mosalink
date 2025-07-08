@@ -2,8 +2,8 @@
 
 import Board from "..";
 import { useQueryBookmarksTags } from "@/hooks/bookmark/useQueryBookmarksTags";
-import TitleBoard from "../TitleBoard";
 import BookmarkBoard from "../BookmarkBoard";
+import BoardHeader from "../BoardHeader";
 
 interface Props {
   id: string;
@@ -19,12 +19,17 @@ const TagBoard = ({ id }: Props) => {
 
   if (isError) {
     console.error("Erreur lors du chargement des bookmarks par tag:", error);
-    return <p className="text-center text-red-500">Une erreur est survenue lors du chargement des bookmarks</p>;
+    return (
+      <Board>
+        <BoardHeader title="Erreur" titleClassName="border" />
+        <p className="text-center text-red-500">Une erreur est survenue lors du chargement des bookmarks</p>
+      </Board>
+    );
   }
 
   return (
     <Board>
-      <TitleBoard className="border">{id}</TitleBoard>
+      <BoardHeader title={id} titleClassName="border" />
       <BookmarkBoard bookmarks={bookmarks ?? []} isLoading={isLoading} />
     </Board>
   );

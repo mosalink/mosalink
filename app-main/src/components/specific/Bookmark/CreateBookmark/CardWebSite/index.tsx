@@ -24,9 +24,9 @@ const CardWebSite = ({
 
   if (loading) {
     return (
-      <div className="flex gap-4 border rounded p-4 items-start min-h-32">
-        <Skeleton className="h-12 w-16 md:h-24 md:w-32 rounded object-cover flex-shrink-0" />
-        <div className="flex flex-col gap-3 w-40 md:w-96">
+      <div className="flex flex-col sm:flex-row gap-4 border rounded p-4 items-start min-h-32 w-full">
+        <Skeleton className="h-24 w-full sm:h-24 sm:w-32 rounded object-cover flex-shrink-0" />
+        <div className="flex flex-col gap-3 w-full">
           <div className="space-y-1">
             <Skeleton className="h-3 w-16" />
             <Skeleton className="h-8 w-full" />
@@ -41,7 +41,7 @@ const CardWebSite = ({
   }
 
   return (
-    <div className="flex gap-4 border rounded p-4 items-start min-h-32">
+    <div className="flex flex-col sm:flex-row gap-4 border rounded p-4 items-start min-h-32 w-full">
       <Image
         onErrorCapture={() => setImageError(true)}
         src={imageError ? defaultImageBookmark : image ?? ""}
@@ -49,16 +49,16 @@ const CardWebSite = ({
         width={250}
         height={150}
         unoptimized
-        className="h-12 w-16 md:h-24 md:w-32 rounded object-cover flex-shrink-0"
+        className="h-24 w-full sm:h-24 sm:w-32 rounded object-cover flex-shrink-0"
       />
 
-      <div className="flex flex-col gap-3 w-40 md:w-96">
+      <div className="flex flex-col gap-3 w-full">
         <div className="space-y-1">
           <label className="text-xs font-medium text-gray-600 uppercase tracking-wide">
             Titre
           </label>
           <p
-            className="text-lg font-bold leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded px-1 py-1 min-h-[2rem] break-words"
+            className="text-base sm:text-lg font-bold leading-tight focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded px-1 py-1 min-h-[2rem] break-words"
             contentEditable
             onBlur={(e) => setTitle(e.target.innerText)}
             suppressContentEditableWarning={true}
@@ -72,7 +72,7 @@ const CardWebSite = ({
             Description
           </label>
           <p
-            className="text-slate-500 leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded px-1 py-1 min-h-[3rem] break-words"
+            className="text-sm sm:text-base text-slate-500 leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 rounded px-1 py-1 min-h-[3rem] break-words"
             contentEditable
             onBlur={(e) => setMetaDescription(e.target.innerText)}
             suppressContentEditableWarning={true}

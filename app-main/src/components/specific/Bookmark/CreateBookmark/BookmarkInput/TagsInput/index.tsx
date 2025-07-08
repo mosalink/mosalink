@@ -40,7 +40,7 @@ const TagsInput = ({ tags, setTags }: Props) => {
   );
 
   return (
-    <div className="flex w-60 md:w-[512px] flex-wrap gap-2 items-center border rounded-sm p-2">
+    <div className="flex w-full max-w-md md:max-w-2xl flex-wrap gap-2 items-center border rounded-sm p-2">
       {tags.length > 0 &&
         tags.map((tag) => {
           return (
@@ -60,14 +60,14 @@ const TagsInput = ({ tags, setTags }: Props) => {
         value={value}
         type="text"
         placeholder="Ajouter un tag..."
-        className="border-none w-auto"
+        className="border-none w-auto flex-1 min-w-0"
         onKeyDown={(event) => handleKeyDown(event)}
         onChange={(e) => {
           setMessage(null);
           setValue(e.target.value);
         }}
       />
-      <p className="text-red-500 text-sm">{message}</p>
+      {message && <p className="text-red-500 text-sm w-full">{message}</p>}
     </div>
   );
 };

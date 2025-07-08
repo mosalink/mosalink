@@ -11,7 +11,7 @@ const TitleBoard = ({ children, className }: Props) => {
     <h1
       className={cn(
         className,
-        "rounded-full px-4 py-2 text-center text-2xl font-bold flex justify-center"
+        "rounded-full px-4 py-2 text-center text-xl md:text-2xl font-bold flex justify-center items-center min-h-[3rem] break-words max-w-full"
       )}
     >
       {children}

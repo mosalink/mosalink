@@ -27,7 +27,7 @@ const LinkInput = ({ setUrl }: Props) => {
   );
 
   return (
-    <div className="w-full flex flex-col gap-4 items-center justify-center">
+    <div className="w-full max-w-2xl flex flex-col gap-4 items-center justify-center px-4">
       <form className="w-full flex flex-col justify-center md:flex-row gap-2">
         <Input
           placeholder="https://"
@@ -41,6 +41,7 @@ const LinkInput = ({ setUrl }: Props) => {
           onClick={() => {
             urlManagement(newUrl);
           }}
+          className="w-full md:w-auto"
         >
           Suivant
         </Button>

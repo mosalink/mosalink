@@ -7,8 +7,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useQueryBookmarksCategories } from "@/hooks/bookmark/useQueryBookmarksCategories";
 import { useQueryCategoriesDomain } from "@/hooks/useCategory";
 import { useMemo } from "react";
-import TitleBoard from "../TitleBoard";
 import BookmarkBoard from "../BookmarkBoard";
+import BoardHeader from "../BoardHeader";
 
 interface Props {
   id: string;
@@ -53,12 +53,17 @@ const CategoryBoard = ({ id, domain }: Props) => {
 
   if (isError) {
     console.error("Erreur lors du chargement des bookmarks:", bookmarksError);
-    return <p className="text-center text-red-500">Une erreur est survenue lors du chargement des bookmarks</p>;
+    return (
+      <Board>
+        <BoardHeader title="Erreur" titleClassName="bg-slate-100" />
+        <p className="text-center text-red-500">Une erreur est survenue lors du chargement des bookmarks</p>
+      </Board>
+    );
   }
 
   return (
     <Board>
-      <TitleBoard className="bg-slate-100">{titleContent}</TitleBoard>
+      <BoardHeader title={titleContent} titleClassName="bg-slate-100" />
       <BookmarkBoard bookmarks={bookmarks ?? []} isLoading={isLoading} />
     </Board>
   );

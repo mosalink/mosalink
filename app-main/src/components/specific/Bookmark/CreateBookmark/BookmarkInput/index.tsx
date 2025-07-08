@@ -93,7 +93,7 @@ const BookmarkInput = ({ url, setUrl }: Props) => {
   }
 
   return (
-    <div className="flex flex-col gap-4 items-start">
+    <div className="flex flex-col gap-4 items-start w-full max-w-2xl px-4">
       <Button variant="secondary" size={"sm"} onClick={() => setUrl(null)}>
         Annuler
       </Button>
@@ -111,7 +111,9 @@ const BookmarkInput = ({ url, setUrl }: Props) => {
         <p className="text-sm text-red-500">{categoryMessage}</p>
       )}
       <TagsInput tags={tags} setTags={setTags} />
-      <Button onClick={() => handleCreateBookmark()}>Créer</Button>
+      <Button onClick={() => handleCreateBookmark()} className="w-full md:w-auto">
+        Créer
+      </Button>
     </div>
   );
 };

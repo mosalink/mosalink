@@ -3,10 +3,11 @@
 ## Stack
 
 - App : React + Next.js (TypeScript)
-- SMTP : Mailtrap[https://mailtrap.io/]
-- Base de donnée : Supabase[https://supabase.com/]
-- Hébergement : Vercel[https://vercel.com/]
-- Gestion du nom de domaine : OVH[https://www.ovhcloud.com/fr/]
+- SMTP : [Mailtrap](https://mailtrap.io/sending/domains/3a9bad16-0eaf-4f4f-aee5-77bb96dbb14a?current_tab=smtp_settings&stream=transactional)
+- Base de donnée : [Supabase](https://supabase.com/dashboard/project/fffjtgfrxydfcngvtlnx/editor/17316?sort=emailVerified%3Adesc)
+- Hébergement : [Vercel](https://vercel.com/mosalinks-projects/mosalink)
+- Gestion du nom de domaine : [OVH](https://www.ovh.com/manager/#/web/domain/mosalink.com/information)
+- Versioning : [GitHub](https://github.com/mosalink/mosalink)
 
 ## Connexion
 
