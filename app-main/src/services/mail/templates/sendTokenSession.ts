@@ -51,7 +51,7 @@ function html({ url, host }: Params) {
 }
 
 function text({ url, host }: Params) {
-  return `Votre lien de connection: ${host}\n${url}\n\n`;
+  return `Votre lien de connexion: ${host}\n${url}\n\n`;
 }
 
 export default function sendTokenSessionMailContent({ url, host }: Params) {

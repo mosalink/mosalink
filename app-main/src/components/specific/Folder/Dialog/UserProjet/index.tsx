@@ -8,7 +8,9 @@ import {
 import { useQueryBookmarksFolder } from "@/hooks/bookmark/useQueryBookmarksFolder";
 import { useMutationAddUserToFolder } from "@/hooks/folder/useMutationAddUserToFolder";
 import { useMutationDeleteUserToFolder } from "@/hooks/folder/useMutationDeleteUserToFolder";
+import { useProjectMembershipFix } from "@/hooks/folder/useProjectMembershipFix";
 import { useQueryUsersDomain } from "@/hooks/user/useQueryUsersDomain";
+import { ProjectMembershipAlert } from "../../ProjectMembershipAlert";
 import { Users, Plus, Trash2, Crown, Search } from "lucide-react";
 import { useCallback, useState } from "react";
 
@@ -18,10 +20,12 @@ interface Props {
 
 const UserProjet = ({ folderId }: Props) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
+  
   const {
     data: dataProjet,
     isLoading: isLoadingProjet,
     isError: isErrorProjet,
+    refetch: refetchProjet,
   } = useQueryBookmarksFolder(folderId);
   const {
     data: dataUser,
@@ -30,6 +34,17 @@ const UserProjet = ({ folderId }: Props) => {
   } = useQueryUsersDomain();
   const addUserToFolderMutation = useMutationAddUserToFolder();
   const deleteUserToFolderMutation = useMutationDeleteUserToFolder();
+
+  const {
+    isFixing: isFixingProject,
+    shouldShowFixButton,
+    fixProjectMembership: handleFixProject
+  } = useProjectMembershipFix({
+    folderId,
+    userCreatorId: dataProjet?.userCreatorId,
+    users: dataProjet?.users,
+    onSuccess: refetchProjet
+  });
 
   const handleDeleteUser = useCallback(
     (userId: string) => {
@@ -86,6 +101,13 @@ const UserProjet = ({ folderId }: Props) => {
       </DialogHeader>
       
       <div className="space-y-6 py-4 overflow-hidden">
+        {shouldShowFixButton && (
+          <ProjectMembershipAlert
+            isFixing={isFixingProject}
+            onFix={handleFixProject}
+          />
+        )}
+        
         <div>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-medium text-gray-900">
@@ -163,59 +185,51 @@ const UserProjet = ({ folderId }: Props) => {
                 />
               </div>
               
-              {searchTerm && (
-                <div className="max-h-44 overflow-y-auto border border-gray-200 rounded-lg bg-white shadow-sm">
-                  {filteredUsers.length === 0 ? (
-                    <div className="px-4 py-6 text-center">
-                      <Users className="mx-auto h-8 w-8 text-gray-300 mb-2" />
-                      <p className="text-sm text-gray-500">
-                        Aucun utilisateur trouvé pour &quot;{searchTerm}&quot;
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="py-1">
-                      {filteredUsers.slice(0, 10).map((user: any, index: number) => (
-                        <div
-                          key={user.id}
-                          onClick={() => handleAddUserToFolder(user.id)}
-                          className={`
-                            flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-150
-                            hover:bg-blue-50 hover:shadow-sm active:bg-blue-100
-                            ${index !== filteredUsers.length - 1 ? 'border-b border-gray-100' : ''}
-                            ${addUserToFolderMutation.isLoading ? 'pointer-events-none opacity-50' : ''}
-                          `}
-                        >
-                          <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center flex-shrink-0">
-                            <Users className="w-4 h-4 text-blue-600" />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="font-medium text-gray-900 truncate">
-                              {user.email}
-                            </div>
-                            {user.name && (
-                              <div className="text-sm text-gray-500 truncate">
-                                {user.name}
-                              </div>
-                            )}
-                          </div>
-                          <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
-                            <Plus className="w-3 h-3 text-green-600" />
-                          </div>
+              <div className="max-h-44 overflow-y-auto border border-gray-200 rounded-lg bg-white shadow-sm">
+                {filteredUsers.length === 0 ? (
+                  <div className="px-4 py-6 text-center">
+                    <Users className="mx-auto h-8 w-8 text-gray-300 mb-2" />
+                    <p className="text-sm text-gray-500">
+                      {searchTerm 
+                        ? `Aucun utilisateur trouvé pour "${searchTerm}"`
+                        : "Aucun utilisateur disponible"
+                      }
+                    </p>
+                  </div>
+                ) : (
+                  <div className="py-1">
+                    {filteredUsers.map((user: any, index: number) => (
+                      <div
+                        key={user.id}
+                        onClick={() => handleAddUserToFolder(user.id)}
+                        className={`
+                          flex items-center gap-3 px-4 py-3 cursor-pointer transition-all duration-150
+                          hover:bg-blue-50 hover:shadow-sm active:bg-blue-100
+                          ${index !== filteredUsers.length - 1 ? 'border-b border-gray-100' : ''}
+                          ${addUserToFolderMutation.isLoading ? 'pointer-events-none opacity-50' : ''}
+                        `}
+                      >
+                        <div className="w-8 h-8 bg-gradient-to-br from-blue-100 to-blue-200 rounded-full flex items-center justify-center flex-shrink-0">
+                          <Users className="w-4 h-4 text-blue-600" />
                         </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              )}
-              
-              {!searchTerm && (
-                <div className="text-center py-4">
-                  <Search className="mx-auto h-6 w-6 text-gray-300 mb-2" />
-                  <p className="text-sm text-gray-500">
-                    Commencez à taper pour rechercher des utilisateurs
-                  </p>
-                </div>
-              )}
+                        <div className="flex-1 min-w-0">
+                          <div className="font-medium text-gray-900 truncate">
+                            {user.email}
+                          </div>
+                          {user.name && (
+                            <div className="text-sm text-gray-500 truncate">
+                              {user.name}
+                            </div>
+                          )}
+                        </div>
+                        <div className="w-6 h-6 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                          <Plus className="w-3 h-3 text-green-600" />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         )}

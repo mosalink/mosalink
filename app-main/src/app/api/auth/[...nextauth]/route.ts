@@ -11,7 +11,7 @@ async function sendVerificationRequest(params: any) {
   const { host } = new URL(url);
   
   const { text, html } = sendTokenSessionMailContent({ url, host });
-  const subject = `${process.env.NEXT_PUBLIC_APP_NAME} | Votre lien de connection`;
+  const subject = `${process.env.NEXT_PUBLIC_APP_NAME} | Votre lien de connexion`;
   
   try {
     await sendMail({

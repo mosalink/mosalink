@@ -12,7 +12,7 @@
 
 - id : mosalink.projet@gmail.com
 - pass : First caractère "N", last caractère "4" (gregoire.cliquet@univ-rennes.fr)
-- Pour la connection à Mailtrap, Supabase et Vercel faire "Continue with GitHub"
+- Pour la connexion à Mailtrap, Supabase et Vercel faire "Continue with GitHub"
 
 ## Installation en local
 

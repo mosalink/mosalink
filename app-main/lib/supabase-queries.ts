@@ -73,17 +73,17 @@ export const userQueries = {
     
     try {
       const { error: folderUserError } = await supabaseAdmin
-        .from("FolderUser")
+        .from("_FolderToUser")
         .delete()
-        .eq("userId", id);
+        .eq("B", id);
       
       if (folderUserError) {
-        console.error("Erreur lors de la suppression des relations FolderUser:", folderUserError);
+        console.error("Erreur lors de la suppression des relations _FolderToUser:", folderUserError);
       } else {
-        console.log("Relations FolderUser supprimées");
+        console.log("Relations _FolderToUser supprimées");
       }
     } catch (error) {
-      console.error("Erreur lors de la suppression des relations FolderUser:", error);
+      console.error("Erreur lors de la suppression des relations _FolderToUser:", error);
     }
     
     try {
@@ -397,13 +397,13 @@ export const domainQueries = {
       if (users && users.length > 0) {
         const userIds = users.map(u => u.id);
         await supabaseAdmin
-          .from("FolderUser")
+          .from("_FolderToUser")
           .delete()
-          .in("userId", userIds);
-        console.log("Relations FolderUser supprimées");
+          .in("B", userIds);
+        console.log("Relations _FolderToUser supprimées");
       }
     } catch (error) {
-      console.error("Erreur lors de la suppression des relations FolderUser:", error);
+      console.error("Erreur lors de la suppression des relations _FolderToUser:", error);
     }
     
     try {
@@ -594,12 +594,11 @@ export const bookmarkQueries = {
   }
 };
 
-// Utilitaires pour les dossiers
 export const folderQueries = {
   async findMany(where?: { userId?: string }) {
     let query = supabaseAdmin.from("Folder").select(`
       *,
-      FolderBookmark (
+      _BookmarkToFolder (
         Bookmark (
           id,
           title,
@@ -618,7 +617,7 @@ export const folderQueries = {
           )
         )
       ),
-      FolderUser (
+      _FolderToUser (
         User (
           id,
           email
@@ -627,10 +626,10 @@ export const folderQueries = {
     `);
     
     if (where?.userId) {
-      query = supabaseAdmin.from("FolderUser").select(`
+      query = supabaseAdmin.from("_FolderToUser").select(`
         Folder (
           *,
-          FolderBookmark (
+          _BookmarkToFolder (
             Bookmark (
               id,
               title,
@@ -650,7 +649,7 @@ export const folderQueries = {
             )
           )
         )
-      `).eq("userId", where.userId);
+      `).eq("B", where.userId);
     }
     
     const { data, error } = await query;
@@ -663,7 +662,7 @@ export const folderQueries = {
       .from("Folder")
       .select(`
         *,
-        FolderBookmark (
+        _BookmarkToFolder (
           Bookmark (
             id,
             title,
@@ -682,7 +681,7 @@ export const folderQueries = {
             )
           )
         ),
-        FolderUser (
+        _FolderToUser (
           User (
             id,
             email
@@ -709,18 +708,18 @@ export const folderQueries = {
 
   async addUser(folderId: string, userId: string) {
     const { error } = await supabaseAdmin
-      .from("FolderUser")
-      .insert({ folderId, userId });
+      .from("_FolderToUser")
+      .insert({ A: folderId, B: userId });
     
     if (error) throw error;
   },
 
   async removeUser(folderId: string, userId: string) {
     const { error } = await supabaseAdmin
-      .from("FolderUser")
+      .from("_FolderToUser")
       .delete()
-      .eq("folderId", folderId)
-      .eq("userId", userId);
+      .eq("A", folderId)
+      .eq("B", userId);
     
     if (error) throw error;
   },

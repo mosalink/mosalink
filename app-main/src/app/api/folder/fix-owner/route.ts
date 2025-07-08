@@ -25,48 +25,71 @@ export async function POST(req: Request) {
     }
 
     if (!folders || folders.length === 0) {
-      return NextResponse.json({ message: "Aucun projet trouvé", fixed: 0 });
+      return NextResponse.json({ 
+        message: "Aucun projet trouvé", 
+        fixed: 0,
+        total: 0,
+        details: "Vous n'avez créé aucun projet pour le moment."
+      });
     }
 
     let fixedCount = 0;
+    const errors: string[] = [];
 
     for (const folder of folders) {
-      // Vérifier si le créateur est déjà dans FolderUser
-      const { data: existingRelation } = await supabase
-        .from('FolderUser')
-        .select('*')
-        .eq('folderId', folder.id)
-        .eq('userId', session.user.id)
-        .single();
+      try {
+        // Vérifier si le créateur est déjà dans _FolderToUser
+        const { data: existingRelation } = await supabase
+          .from('_FolderToUser')
+          .select('*')
+          .eq('A', folder.id)
+          .eq('B', session.user.id)
+          .single();
 
-      if (!existingRelation) {
-        // Ajouter le créateur au projet
-        const { error: insertError } = await supabase
-          .from('FolderUser')
-          .insert({
-            folderId: folder.id,
-            userId: session.user.id,
-          });
+        if (!existingRelation) {
+          // Ajouter le créateur au projet
+          const { error: insertError } = await supabase
+            .from('_FolderToUser')
+            .insert({
+              A: folder.id,
+              B: session.user.id,
+            });
 
-        if (!insertError) {
-          console.log(`✅ Créateur ajouté au projet: ${folder.name}`);
-          fixedCount++;
+          if (!insertError) {
+            console.log(`✅ Créateur ajouté au projet: ${folder.name}`);
+            fixedCount++;
+          } else {
+            const errorMsg = `Erreur ajout créateur au projet ${folder.name}: ${insertError.message}`;
+            console.error(`❌ ${errorMsg}`);
+            errors.push(errorMsg);
+          }
         } else {
-          console.error(`❌ Erreur ajout créateur au projet ${folder.name}:`, insertError);
+          console.log(`🆗 Créateur déjà membre du projet: ${folder.name}`);
         }
-      } else {
-        console.log(`🆗 Créateur déjà membre du projet: ${folder.name}`);
+      } catch (error) {
+        const errorMsg = `Erreur lors du traitement du projet ${folder.name}: ${error}`;
+        console.error(`❌ ${errorMsg}`);
+        errors.push(errorMsg);
       }
     }
 
-    return NextResponse.json({ 
+    const response = {
       message: `Correction terminée. ${fixedCount} projet(s) corrigé(s) sur ${folders.length}`,
       fixed: fixedCount,
-      total: folders.length
-    });
+      total: folders.length,
+      errors: errors.length > 0 ? errors : undefined,
+      details: fixedCount > 0 
+        ? `Vous avez été ajouté à ${fixedCount} projet(s) où vous n'étiez pas listé comme membre.`
+        : "Tous vos projets sont déjà correctement configurés."
+    };
+
+    return NextResponse.json(response);
 
   } catch (error) {
     console.error("Erreur correction projets:", error);
-    return NextResponse.json({ error: "Erreur interne" }, { status: 500 });
+    return NextResponse.json({ 
+      error: "Erreur interne lors de la correction des projets",
+      details: error instanceof Error ? error.message : "Erreur inconnue"
+    }, { status: 500 });
   }
 }

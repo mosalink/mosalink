@@ -33,7 +33,7 @@ const VerifyRequestPage = async () => {
     <div className="w-full h-screen flex flex-col items-center justify-center gap-8">
       <Mail className="h-12 w-12" />
       <h1 className="font-bold text-2xl">
-        Vous avez reçu un lien de connection
+        Vous avez reçu un lien de connexion
       </h1>
       <p>Regardez dans votre boîte mail</p>
     </div>

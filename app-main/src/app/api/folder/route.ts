@@ -11,19 +11,53 @@ export async function GET() {
   }
 
   try {
-    const { data: folders, error } = await supabase
+    const { data: ownedFolders, error: ownedError } = await supabase
       .from('Folder')
       .select('*')
       .eq('userCreatorId', session?.user?.id);
 
-    if (error) {
-      console.error("Erreur récupération folders:", error);
-      return NextResponse.json({ error: "Erreur interne", details: error.message }, { status: 500 });
+    if (ownedError) {
+      console.error("Erreur récupération projets créés:", ownedError);
+      return NextResponse.json({ error: "Erreur interne", details: ownedError.message }, { status: 500 });
     }
 
-    const result = Array.isArray(folders) ? folders : [];
+    const { data: memberRelations, error: memberError } = await supabase
+      .from('_FolderToUser')
+      .select('A')
+      .eq('B', session?.user?.id);
+
+    if (memberError) {
+      console.error("Erreur récupération relations membres:", memberError);
+      return NextResponse.json({ error: "Erreur interne", details: memberError.message }, { status: 500 });
+    }
+
+    let memberFolders: any[] = [];
+    if (memberRelations && memberRelations.length > 0) {
+      const folderIds = memberRelations.map(rel => rel.A);
+      const { data: memberFoldersData, error: memberFoldersError } = await supabase
+        .from('Folder')
+        .select('*')
+        .in('id', folderIds);
+
+      if (memberFoldersError) {
+        console.error("Erreur récupération détails projets membres:", memberFoldersError);
+        return NextResponse.json({ error: "Erreur interne", details: memberFoldersError.message }, { status: 500 });
+      }
+
+      memberFolders = memberFoldersData || [];
+    }
+
+    const allFolders = [...(ownedFolders || [])];
     
-    return NextResponse.json(result);
+    memberFolders.forEach(folder => {
+      if (!allFolders.some(existingFolder => existingFolder.id === folder.id)) {
+        allFolders.push(folder);
+      }
+    });
+
+    console.log(`Utilisateur ${session.user.id}: ${ownedFolders?.length || 0} projets créés, ${memberFolders.length} projets membres, ${allFolders.length} total`);
+    
+    return NextResponse.json(allFolders);
   } catch (error) {
     console.error("Erreur récupération folders:", error);
     return NextResponse.json({ error: "Erreur interne", details: error instanceof Error ? error.message : String(error) }, { status: 500 });
@@ -105,19 +139,22 @@ export async function POST(req: Request) {
 
     try {
       const { error: folderUserError } = await supabase
-        .from('FolderUser')
+        .from('_FolderToUser')
         .insert({
-          folderId: newId,
-          userId: session.user.id,
+          A: newId,
+          B: session.user.id,
         });
 
       if (folderUserError) {
         console.error("Erreur ajout créateur au projet:", folderUserError);
+        if (folderUserError.code !== '23505') { // 23505 = unique_violation
+          console.warn("Erreur non critique lors de l'ajout du créateur au projet");
+        }
       } else {
-        console.log("Créateur ajouté automatiquement au projet");
+        console.log("✅ Créateur ajouté automatiquement au projet");
       }
     } catch (folderUserError) {
-      console.error("Erreur ajout créateur au projet:", folderUserError);
+      console.error("Erreur capture lors de l'ajout du créateur au projet:", folderUserError);
     }
 
     return NextResponse.json(newFolder);
