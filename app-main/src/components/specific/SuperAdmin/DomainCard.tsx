@@ -115,7 +115,7 @@ export default function DomainCard({ domain }: DomainCardProps) {
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <BookmarkIcon className="h-4 w-4 text-orange-500" />
-                <span>{domain._count.bookmark} signets</span>
+                <span>{domain._count.bookmark} bookmarks</span>
               </div>
             </div>
 
@@ -139,7 +139,7 @@ export default function DomainCard({ domain }: DomainCardProps) {
             <DialogDescription>
               Êtes-vous sûr de vouloir supprimer le domaine &quot;{domain.name}&quot; ? 
               Cette action est irréversible et supprimera tous les utilisateurs, 
-              catégories et signets associés.
+              catégories et bookmarks associés.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>

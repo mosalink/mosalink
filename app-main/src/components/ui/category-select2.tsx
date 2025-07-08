@@ -266,7 +266,7 @@ export const CategorySelect2 = ({
                             Supprimer la catégorie &ldquo;{category.name}&rdquo;
                           </DialogTitle>
                           <DialogDescription>
-                            Cette action est irréversible. Tous les signets de cette
+                            Cette action est irréversible. Tous les bookmarks de cette
                             catégorie seront également supprimés.
                           </DialogDescription>
                         </DialogHeader>

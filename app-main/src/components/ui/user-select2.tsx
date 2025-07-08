@@ -400,7 +400,7 @@ export const UserSelect2 = ({
                             Supprimer l&apos;utilisateur &ldquo;{user.email}&rdquo;
                           </DialogTitle>
                           <DialogDescription>
-                            Cette action est irréversible. Tous les signets de cet
+                            Cette action est irréversible. Tous les bookmarks de cet
                             utilisateur seront également supprimés.
                           </DialogDescription>
                         </DialogHeader>
