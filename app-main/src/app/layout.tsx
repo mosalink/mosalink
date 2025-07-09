@@ -8,7 +8,7 @@ import { Toaster } from "@/components/ui/toaster";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: `${process.env.NEXT_PUBLIC_APP_NAME} | créez des liens collaboratifs`,
+  title: `${process.env.NEXT_PUBLIC_APP_NAME} | Créez des liens collaboratifs`,
   description: `${process.env.NEXT_PUBLIC_APP_NAME} vous permet de créer des liens en collaboration avec vos collègues`,
   manifest: "/manifest.json",
   themeColor: "#5B0B53",
