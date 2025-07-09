@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: `${process.env.NEXT_PUBLIC_APP_NAME} | Créez des liens collaboratifs`,
   description: `${process.env.NEXT_PUBLIC_APP_NAME} vous permet de créer des liens en collaboration avec vos collègues`,
   manifest: "/manifest.json",
-  themeColor: "#5B0B53",
+  themeColor: "#599191",
   icons: "/icon-256x256.png",
 };
 
