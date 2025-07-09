@@ -22,7 +22,7 @@ export const DynamicBreadcrumb = ({ domain, className }: DynamicBreadcrumbProps)
       <BreadcrumbWrapper 
         className={className}
         customItems={[
-          { label: "Accueil", href: "/" },
+          { label: "", href: "/" },
           { label: pathSegments[0], isCurrentPage: true }
         ]}
       />
@@ -63,7 +63,7 @@ export const DynamicBreadcrumb = ({ domain, className }: DynamicBreadcrumbProps)
         <BreadcrumbWrapper 
           className={className}
           customItems={[
-            { label: "Accueil", href: "/" },
+            { label: "", href: "/" },
             { label: domainSegment, href: `/${domainSegment}` },
             { label: "Administration", isCurrentPage: true }
           ]}
@@ -75,7 +75,7 @@ export const DynamicBreadcrumb = ({ domain, className }: DynamicBreadcrumbProps)
         <BreadcrumbWrapper 
           className={className}
           customItems={[
-            { label: "Accueil", href: "/" },
+            { label: "", href: "/" },
             { label: domainSegment, href: `/${domainSegment}` },
             { label: "Créer un bookmark", isCurrentPage: true }
           ]}
@@ -87,7 +87,7 @@ export const DynamicBreadcrumb = ({ domain, className }: DynamicBreadcrumbProps)
         <BreadcrumbWrapper 
           className={className}
           customItems={[
-            { label: "Accueil", href: "/" },
+            { label: "", href: "/" },
             { label: domainSegment, href: `/${domainSegment}` },
             { label: "Recherche", isCurrentPage: true }
           ]}
