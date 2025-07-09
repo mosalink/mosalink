@@ -17,6 +17,9 @@ INSERT INTO "Domain" (
     now()
 ) ON CONFLICT (name) DO NOTHING;
 
+-- Ajouter la colonne password si elle n'existe pas
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "password" TEXT;
+
 -- User super-admin
 INSERT INTO "User" (
     id,

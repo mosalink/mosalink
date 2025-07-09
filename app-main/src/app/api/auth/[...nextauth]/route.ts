@@ -1,10 +1,17 @@
 import NextAuth, { NextAuthOptions } from "next-auth";
 import EmailProvider from "next-auth/providers/email";
+import CredentialsProvider from "next-auth/providers/credentials";
 import { createTransport } from "nodemailer";
 import sendMail from "@/services/mail/sendMail";
 import sendTokenSessionMailContent from "@/services/mail/templates/sendTokenSession";
 import { SupabaseAdapter } from "../../../../../lib/supabase-adapter";
 import { supabaseAdmin } from "../../../../../lib/supabase";
+import bcrypt from "bcryptjs";
+
+// Fonction sécurisée de vérification de mot de passe
+async function verifyPassword(password: string, hashedPassword: string): Promise<boolean> {
+  return await bcrypt.compare(password, hashedPassword);
+}
 
 async function sendVerificationRequest(params: any) {
   const { identifier, url, provider } = params;
@@ -50,6 +57,44 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
+    CredentialsProvider({
+      name: "credentials",
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        }
+
+        try {
+          const { data: user, error } = await supabaseAdmin
+            .from("User")
+            .select("id, email, password, domainId")
+            .eq("email", credentials.email)
+            .single();
+
+          if (error || !user || !user.password) {
+            return null;
+          }
+
+          const isValidPassword = await verifyPassword(credentials.password, user.password);
+          
+          if (!isValidPassword) {
+            return null;
+          }
+
+          return {
+            id: user.id,
+            email: user.email,
+          };
+        } catch (error) {
+          console.error("Erreur lors de l'authentification:", error);
+          return null;
+        }
+      }
+    }),
   ],
   pages: {
     signIn: "/login",
@@ -64,7 +109,6 @@ export const authOptions: NextAuthOptions = {
           .select("email, domainId")
           .eq("email", user.email ?? "")
           .single();
-        
         if (userExists) {
           return true;
         } else {
@@ -75,13 +119,13 @@ export const authOptions: NextAuthOptions = {
         return true;
       }
     },
-    async session({ session, user }) {
-      if (session?.user && user?.email) {
+    async session({ session, token }) {
+      if (session?.user && token?.email) {
         try {
           const { data: userData } = await supabaseAdmin
             .from("User")
             .select("id, domainId, role")
-            .eq("email", user.email)
+            .eq("email", token.email)
             .single();
 
           if (userData) {
@@ -96,12 +140,12 @@ export const authOptions: NextAuthOptions = {
             session.user.domainUrl = domain?.url;
             session.user.id = userData.id;
             session.user.role = userData.role;
+            session.user.email = token.email;
           }
         } catch (error) {
           console.error("Erreur lors de la récupération des données utilisateur:", error);
         }
       }
-
       return session;
     },
     async redirect({ url, baseUrl }) {
@@ -118,7 +162,7 @@ export const authOptions: NextAuthOptions = {
     },
   },
   session: {
-    strategy: "database",
+    strategy: "jwt",
   },
   secret: process.env.NEXTAUTH_SECRET,
 };

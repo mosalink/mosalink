@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev --turbo",
-    "build": "next build",
+    "build": "npx prisma generate && next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -32,8 +32,10 @@
     "@supabase/supabase-js": "^2.50.3",
     "@tanstack/react-query": "^4.32.0",
     "@tanstack/react-query-devtools": "^4.32.0",
+    "@types/bcryptjs": "^2.4.6",
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
+    "bcryptjs": "^3.0.2",
     "cheerio": "^1.0.0-rc.12",
     "class-variance-authority": "^0.7.0",
     "clsx": "^2.1.1",

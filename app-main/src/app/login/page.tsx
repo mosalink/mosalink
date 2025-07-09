@@ -2,8 +2,8 @@ import { getServerSession } from "next-auth";
 import supabase from "../../../lib/supabase";
 import { redirect } from "next/navigation";
 import { routeDomainFront } from "@/utils/routes/routesFront";
-import Login from "@/components/specific/Login";
 import { authOptions } from "../api/auth/[...nextauth]/route";
+import Login from "@/components/specific/Login";
 
 export default async function LoginPage() {
   const session = await getServerSession(authOptions);
@@ -16,13 +16,13 @@ export default async function LoginPage() {
           id,
           email,
           domainId,
-          domain:Domain(url)
+          Domain(url)
         `)
         .eq('email', session.user.email)
         .single();
 
-      if (!userError && user?.domain && Array.isArray(user.domain) && user.domain.length > 0) {
-        return redirect(routeDomainFront(user.domain[0].url));
+      if (!userError && user?.Domain && Array.isArray(user.Domain) && user.Domain.length > 0) {
+        return redirect(routeDomainFront(user.Domain[0].url));
       }
       
       if (!userError && user) {
@@ -35,12 +35,5 @@ export default async function LoginPage() {
     return redirect('/');
   }
 
-  return (
-    <div className="flex flex-col h-screen w-full items-center justify-center gap-8">
-      <h1 className="font-bold text-2xl">
-        Bienvenue sur {process.env.NEXT_PUBLIC_APP_NAME}
-      </h1>
-      <Login />
-    </div>
-  );
+  return <Login />;
 }
