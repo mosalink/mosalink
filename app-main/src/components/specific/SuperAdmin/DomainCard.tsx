@@ -21,14 +21,16 @@ import {
 import { DomainWithDetails } from "@/hooks/super-admin/useQuerySuperAdminDomains";
 import { useMutationDeleteDomain } from "@/hooks/super-admin/useMutationDeleteDomain";
 import { useToast } from "@/components/ui/use-toast";
-import { 
-  Trash2, 
-  Users, 
-  BookmarkIcon, 
+import {
+  Trash2,
+  Users,
+  BookmarkIcon,
   Folder,
   Globe,
+  Pencil,
 } from "lucide-react";
 import ManageUsersDialog from "./ManageUsersDialog";
+import EditDomainDialog from "./EditDomainDialog";
 
 interface DomainCardProps {
   domain: DomainWithDetails;
@@ -36,6 +38,7 @@ interface DomainCardProps {
 
 export default function DomainCard({ domain }: DomainCardProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
 
   const { toast } = useToast();
   const deleteDomainMutation = useMutationDeleteDomain();
@@ -89,16 +92,26 @@ export default function DomainCard({ domain }: DomainCardProps) {
                 URL: {domain.url} | Créé le {formatDate(domain.creationDate)}
               </CardDescription>
             </div>
-            {domain.name !== "super-admin" && (
+            <div className="flex gap-2">
               <Button 
                 variant="outline" 
                 size="sm"
-                onClick={() => setDeleteDialogOpen(true)}
-                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                onClick={() => setEditDialogOpen(true)}
+                className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
               >
-                <Trash2 className="h-4 w-4" />
+                <Pencil className="h-4 w-4" />
               </Button>
-            )}
+              {domain.name !== "super-admin" && (
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => setDeleteDialogOpen(true)}
+                  className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
+            </div>
           </div>
         </CardHeader>
         <CardContent>
@@ -130,7 +143,7 @@ export default function DomainCard({ domain }: DomainCardProps) {
           </div>
         </CardContent>
       </Card>
-
+      <EditDomainDialog domain={domain} open={editDialogOpen} onOpenChange={setEditDialogOpen} />
       {/* Dialog de suppression de domaine */}
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>

@@ -21,7 +21,7 @@ export default function CreateDomainDialog() {
   const [formData, setFormData] = useState({
     name: "",
     url: "",
-    isPublish: false,
+    isPublish: true, // Par défaut publié
     maximumCategories: 10,
     adminEmail: "",
   });
@@ -51,7 +51,7 @@ export default function CreateDomainDialog() {
       setFormData({
         name: "",
         url: "",
-        isPublish: false,
+        isPublish: true, // Par défaut publié après création aussi
         maximumCategories: 10,
         adminEmail: "",
       });
@@ -63,6 +63,18 @@ export default function CreateDomainDialog() {
       });
     }
   };
+
+  // Fonction utilitaire pour générer une URL valide à partir du nom
+  function removeDiacritics(str: string) {
+    return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+  }
+  function generateUrlFromName(name: string) {
+    return removeDiacritics(name)
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .replace(/--+/g, "-");
+  }
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -82,7 +94,14 @@ export default function CreateDomainDialog() {
             <Input
               id="name"
               value={formData.name}
-              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              onChange={(e) => {
+                const name = e.target.value;
+                setFormData((prev) => ({
+                  ...prev,
+                  name,
+                  url: prev.url === "" || prev.url === generateUrlFromName(prev.name) ? generateUrlFromName(name) : prev.url
+                }));
+              }}
               placeholder="Nom du domaine"
               required
             />
