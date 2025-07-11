@@ -95,3 +95,4 @@ npx prisma generate
 ### Auteur du README
 
 Colin LALLAURET
+
