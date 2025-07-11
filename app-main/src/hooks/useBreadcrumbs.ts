@@ -41,7 +41,7 @@ export const useBreadcrumbs = (options: UseBreadcrumbsOptions = {}) => {
     const pathSegments = pathname.split('/').filter(Boolean)
 
     items.push({
-      label: "Accueilll",
+      label: "",
       href: routeIndexFront || "/"
     })
 
