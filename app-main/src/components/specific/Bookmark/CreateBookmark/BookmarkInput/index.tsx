@@ -19,13 +19,15 @@ import { useMutationCreateBookmarkSupabase } from "@/hooks/bookmark/useMutationC
 interface Props {
   url: string;
   setUrl: Dispatch<SetStateAction<string | null>>;
+  initialTitle?: string | null;
+  initialDescription?: string | null;
 }
 
-const BookmarkInput = ({ url, setUrl }: Props) => {
+const BookmarkInput = ({ url, setUrl, initialTitle, initialDescription }: Props) => {
   const [metaDescription, setMetaDescription] = useState<string>(
-    "La description du bookmark"
+    initialDescription || "La description du bookmark"
   );
-  const [title, setTitle] = useState<string>(url);
+  const [title, setTitle] = useState<string>(initialTitle || url);
   const [image, setImage] = useState<string>(url);
   const [loading, setLoading] = useState(true);
   const [categoryId, setCategoryId] = useState<string>();
@@ -44,24 +46,32 @@ const BookmarkInput = ({ url, setUrl }: Props) => {
         body: JSON.stringify({ url }),
       });
       const {
-        title,
-        metaDescription,
-        image,
+        title: fetchedTitle,
+        metaDescription: fetchedDescription,
+        image: fetchedImage,
       }: {
         title: string | undefined;
         metaDescription: string | undefined;
         image: string | undefined;
       } = await response.json();
 
-      title && setTitle(title);
-      metaDescription && setMetaDescription(metaDescription);
-      image && setImage(image);
+      if (fetchedTitle && !initialTitle) {
+        setTitle(fetchedTitle);
+      }
+      
+      if (fetchedDescription && !initialDescription) {
+        setMetaDescription(fetchedDescription);
+      }
+      
+      if (fetchedImage) {
+        setImage(fetchedImage);
+      }
 
       setLoading(false);
     } catch (error) {
       setLoading(false);
     }
-  }, []);
+  }, [initialTitle, initialDescription]);
 
   useEffect(() => {
     getHtmlToUrl(url);
